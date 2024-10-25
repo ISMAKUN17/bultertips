@@ -9,43 +9,65 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
   <style>
-    /* Tus estilos personalizados aquí */
-    .chart-container {
-      position: relative;
-      margin: auto;
-      height: 40vh;
-      width: 80vw;
-    }
+    .sidebar { background-color: #333; height: 100vh; padding: 20px; color: white; }
+    .main-content { padding: 20px; }
+    .chart-container { position: relative; margin: auto; height: 40vh; width: 80vw; }
   </style>
 </head>
 <body>
   <div class="container-fluid">
     <div class="row">
-      <!-- Sidebar -->
-      <div class="col-md-2 sidebar d-none d-md-block">
-        <div class="d-flex flex-column">
-          <h3 class="mb-4">GymPro</h3>
-          <nav class="nav flex-column">
-            <a href="/dashboard" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
-            <!-- Más enlaces de navegación -->
-          </nav>
-        </div>
-      </div>
-      <!-- Main Content -->
-      <div class="col-md-10 main-content">
-        <!-- Header -->
-        <div class="row mb-4">
+      <!-- Sidebar Section -->
+      <aside class="col-md-2 sidebar">
+        <h3 class="mb-4">GymPro</h3>
+        <nav class="nav flex-column">
+          <a href="#" class="nav-link text-white">Dashboard</a>
+          <a href="#" class="nav-link text-white">Miembros</a>
+          <a href="#" class="nav-link text-white">Reportes</a>
+          <a href="#" class="nav-link text-white">Configuración</a>
+        </nav>
+      </aside>
+
+      <!-- Main Content Section -->
+      <main class="col-md-10 main-content">
+        <!-- Header Section -->
+        <header class="row mb-4">
           <div class="col-md-6">
             <h2>Dashboard</h2>
             <p class="text-muted">Vista general del gimnasio</p>
           </div>
-        </div>
-        <!-- Quick Stats -->
-        <div class="row mb-4">
-          <!-- Estadísticas rápidas aquí -->
-        </div>
-        <!-- Charts -->
-        <div class="row mb-4">
+        </header>
+
+        <!-- Quick Stats Section -->
+        <section class="row mb-4">
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Miembros Activos</h5>
+                <p class="card-text" id="activeMembers">0</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Nuevos Miembros</h5>
+                <p class="card-text" id="newMembers">0</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Ingresos Totales</h5>
+                <p class="card-text" id="totalIncome">$0</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="row mb-4">
           <div class="col-md-8">
             <div class="chart-container">
               <h5>Tendencia de Membresías</h5>
@@ -56,11 +78,12 @@
             <h5>Tipos de Membresía</h5>
             <canvas id="membershipTypes"></canvas>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   </div>
 
+  <!-- Firebase and Chart Scripts -->
   <script type="module">
     // Importar SDK de Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
@@ -130,14 +153,10 @@
         options: {
           responsive: true,
           plugins: {
-            legend: {
-              position: 'top',
-            }
+            legend: { position: 'top' }
           },
           scales: {
-            y: {
-              beginAtZero: false
-            }
+            y: { beginAtZero: false }
           }
         }
       });
@@ -155,11 +174,7 @@
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: {
-              position: 'bottom'
-            }
-          },
+          plugins: { legend: { position: 'bottom' } },
           cutout: '70%'
         }
       });
