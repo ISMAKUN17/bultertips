@@ -1,0 +1,386 @@
+<html><head><base href="/members/memberships/members/new">
+<title>GymPro - Nuevo Miembro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+  --primary-color: #2C3E50;
+  --secondary-color: #3498DB;
+  --accent-color: #E74C3C;
+  --background-light: #ECF0F1;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background-light);
+}
+
+.sidebar {
+  background: white;
+  height: 100vh;
+  padding: 2rem 1rem;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.main-content {
+  padding: 2rem;
+}
+
+.form-section {
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-upload {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+
+.profile-upload img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-upload .upload-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.profile-upload:hover .upload-overlay {
+  opacity: 1;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid var(--secondary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.nav-pills .nav-link.active {
+  background-color: var(--secondary-color);
+}
+
+.tab-content {
+  padding-top: 2rem;
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay">
+  <div class="spinner"></div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-2 sidebar d-none d-md-block">
+      <div class="d-flex flex-column">
+        <h3 class="mb-4">GymPro</h3>
+        <nav class="nav flex-column">
+          <a href="/dashboard" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+          <a href="/members" class="nav-link active"><i class="fas fa-users"></i> Miembros</a>
+          <a href="/memberships" class="nav-link"><i class="fas fa-id-card"></i> Membresías</a>
+          <a href="/classes" class="nav-link"><i class="fas fa-dumbbell"></i> Clases</a>
+          <a href="/inventory" class="nav-link"><i class="fas fa-box"></i> Inventario</a>
+          <a href="/reports" class="nav-link"><i class="fas fa-chart-bar"></i> Reportes</a>
+          <a href="/settings" class="nav-link"><i class="fas fa-cog"></i> Configuración</a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-10 main-content">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2>Nuevo Miembro</h2>
+          <p class="text-muted">Complete la información del nuevo miembro</p>
+        </div>
+        <a href="/members" class="btn btn-outline-secondary">
+          <i class="fas fa-arrow-left"></i> Volver
+        </a>
+      </div>
+
+      <form id="newMemberForm">
+        <div class="row">
+          <!-- Left Column -->
+          <div class="col-md-8">
+            <!-- Personal Information -->
+            <div class="form-section">
+              <h4 class="mb-4">Información Personal</h4>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Nombre Completo*</label>
+                  <input type="text" class="form-control" name="fullName" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Email*</label>
+                  <input type="email" class="form-control" name="email" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Teléfono*</label>
+                  <input type="tel" class="form-control" name="phone" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Fecha de Nacimiento</label>
+                  <input type="date" class="form-control" name="birthDate">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Dirección</label>
+                  <input type="text" class="form-control" name="address">
+                </div>
+              </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="form-section">
+              <h4 class="mb-4">Contacto de Emergencia</h4>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Nombre del Contacto</label>
+                  <input type="text" class="form-control" name="emergencyContact">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Teléfono de Emergencia</label>
+                  <input type="tel" class="form-control" name="emergencyPhone">
+                </div>
+              </div>
+            </div>
+
+            <!-- Membership Information -->
+            <div class="form-section">
+              <h4 class="mb-4">Información de Membresía</h4>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Plan de Membresía*</label>
+                  <select class="form-select" name="membershipPlan" required>
+                    <option value="">Seleccionar plan...</option>
+                    <option value="monthly">Mensual</option>
+                    <option value="quarterly">Trimestral</option>
+                    <option value="yearly">Anual</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Fecha de Inicio*</label>
+                  <input type="date" class="form-control" name="startDate" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Método de Pago*</label>
+                  <select class="form-select" name="paymentMethod" required>
+                    <option value="">Seleccionar método...</option>
+                    <option value="cash">Efectivo</option>
+                    <option value="card">Tarjeta</option>
+                    <option value="transfer">Transferencia</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Estado</label>
+                  <select class="form-select" name="status">
+                    <option value="active">Activo</option>
+                    <option value="pending">Pendiente</option>
+                    <option value="inactive">Inactivo</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="col-md-4">
+            <div class="form-section">
+              <h4 class="mb-4">Foto de Perfil</h4>
+              <div class="text-center">
+                <div class="profile-upload mx-auto mb-3" onclick="document.getElementById('profilePicture').click()">
+                  <img id="profilePreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' fill='%23999' class='bi bi-person' viewBox='0 0 16 16'%3E%3Cpath d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/%3E%3C/svg%3E" alt="Profile Picture">
+                  <div class="upload-overlay">
+                    <i class="fas fa-camera"></i>
+                  </div>
+                </div>
+                <input type="file" id="profilePicture" name="profilePicture" accept="image/*" hidden>
+                <p class="text-muted small">Haz clic para subir una foto</p>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h4 class="mb-4">Notas Adicionales</h4>
+              <textarea class="form-control" name="notes" rows="4" placeholder="Agregar notas sobre el miembro..."></textarea>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Guardar Miembro
+              </button>
+              <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='/members'">
+                <i class="fas fa-times"></i> Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+<script>
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
+  authDomain: "ismakun-bf0fa.firebaseapp.com",
+  databaseURL: "https://ismakun-bf0fa-default-rtdb.firebaseio.com",
+  projectId: "ismakun-bf0fa",
+  storageBucket: "ismakun-bf0fa.appspot.com",
+  messagingSenderId: "1028877703945",
+  appId: "1:1028877703945:web:331de48acbcdf2234a51d8"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+  setupEventListeners();
+});
+
+function setupEventListeners() {
+  // Profile picture preview
+  document.getElementById('profilePicture').addEventListener('change', handleProfilePictureChange);
+  
+  // Form submission
+  document.getElementById('newMemberForm').addEventListener('submit', handleFormSubmit);
+}
+
+function handleProfilePictureChange(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('profilePreview').src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
+}
+
+async function handleFormSubmit(e) {
+  e.preventDefault();
+  showLoading();
+
+  try {
+    const formData = new FormData(e.target);
+    const memberData = {
+      fullName: formData.get('fullName'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      birthDate: formData.get('birthDate'),
+      address: formData.get('address'),
+      emergencyContact: formData.get('emergencyContact'),
+      emergencyPhone: formData.get('emergencyPhone'),
+      notes: formData.get('notes'),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    // Upload profile picture if exists
+    const profilePicture = document.getElementById('profilePicture').files[0];
+    if (profilePicture) {
+      const storageRef = storage.ref(`profile-pictures/${Date.now()}_${profilePicture.name}`);
+      await storageRef.put(profilePicture);
+      memberData.profilePicture = await storageRef.getDownloadURL();
+    }
+
+    // Add member to Firestore
+    const memberRef = await db.collection('members').add(memberData);
+
+    // Create membership
+    const membershipData = {
+      memberId: memberRef.id,
+      plan: formData.get('membershipPlan'),
+      startDate: formData.get('startDate'),
+      paymentMethod: formData.get('paymentMethod'),
+      status: formData.get('status'),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    await db.collection('memberships').add(membershipData);
+
+    alert('Miembro creado exitosamente');
+    window.location.href = '/members';
+  } catch (error) {
+    console.error('Error creating member:', error);
+    alert('Error al crear el miembro');
+  }
+
+  hideLoading();
+}
+
+function showLoading() {
+  document.querySelector('.loading-overlay').style.display = 'flex';
+}
+
+function hideLoading() {
+  document.querySelector('.loading-overlay').style.display = 'none';
+}
+
+// Navigation menu functionality
+document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const href = e.target.closest('a').getAttribute('href');
+    window.location.href = `/members/memberships${href}`;
+  });
+});
+</script>
+
+</body>
+</html>
