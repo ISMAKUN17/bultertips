@@ -8,88 +8,46 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-  <style>
-    .sidebar { background-color: #333; height: 100vh; padding: 20px; color: white; }
-    .main-content { padding: 20px; }
-    .chart-container { position: relative; margin: auto; height: 40vh; width: 80vw; }
-  </style>
 </head>
 <body>
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Sidebar Section -->
-      <aside class="col-md-2 sidebar">
-        <h3 class="mb-4">GymPro</h3>
-        <nav class="nav flex-column">
-          <a href="#" class="nav-link text-white">Dashboard</a>
-          <a href="#" class="nav-link text-white">Miembros</a>
-          <a href="#" class="nav-link text-white">Reportes</a>
-          <a href="#" class="nav-link text-white">Configuración</a>
-        </nav>
-      </aside>
-
-      <!-- Main Content Section -->
-      <main class="col-md-10 main-content">
-        <!-- Header Section -->
-        <header class="row mb-4">
-          <div class="col-md-6">
-            <h2>Dashboard</h2>
-            <p class="text-muted">Vista general del gimnasio</p>
-          </div>
-        </header>
-
-        <!-- Quick Stats Section -->
-        <section class="row mb-4">
-          <div class="col-md-4">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Miembros Activos</h5>
-                <p class="card-text" id="activeMembers">0</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Nuevos Miembros</h5>
-                <p class="card-text" id="newMembers">0</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Ingresos Totales</h5>
-                <p class="card-text" id="totalIncome">$0</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Charts Section -->
-        <section class="row mb-4">
-          <div class="col-md-8">
-            <div class="chart-container">
-              <h5>Tendencia de Membresías</h5>
-              <canvas id="membershipTrend"></canvas>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <h5>Tipos de Membresía</h5>
-            <canvas id="membershipTypes"></canvas>
-          </div>
-        </section>
-      </main>
+  <!-- Sidebar -->
+  <div class="col-md-2 sidebar d-none d-md-block bg-light p-3">
+    <h3>GymPro</h3>
+    <nav class="nav flex-column">
+      <a href="#" class="nav-link active">Dashboard</a>
+    </nav>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="col-md-10">
+    <div class="container-fluid">
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-6">
+          <h2>Dashboard</h2>
+          <p class="text-muted">Vista general del gimnasio</p>
+        </div>
+      </div>
+      
+      <!-- Charts -->
+      <div class="row">
+        <div class="col-md-8">
+          <h5>Tendencia de Membresías</h5>
+          <canvas id="membershipTrend"></canvas>
+        </div>
+        <div class="col-md-4">
+          <h5>Tipos de Membresía</h5>
+          <canvas id="membershipTypes"></canvas>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Firebase and Chart Scripts -->
+  <!-- Firebase y Gráficos -->
   <script type="module">
-    // Importar SDK de Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
       authDomain: "ismakun-bf0fa.firebaseapp.com",
@@ -100,92 +58,47 @@
       appId: "1:1028877703945:web:d9b0c5ff6ff890e64a51d8"
     };
 
-    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
-    // Guardar datos en Firebase
     function saveData(memberID, name, membershipType, status) {
-      set(ref(database, 'members/' + memberID), {
-        name: name,
-        membershipType: membershipType,
-        status: status
-      });
+      set(ref(database, 'members/' + memberID), { name, membershipType, status });
     }
 
-    // Cargar datos de Firebase
     async function loadChartData() {
-      const dbRef = ref(database);
-      const snapshot = await get(child(dbRef, 'members/'));
-      
+      const snapshot = await get(child(ref(database), 'members/'));
       if (snapshot.exists()) {
         const membersData = snapshot.val();
         const membershipCounts = { Premium: 0, Básica: 0, Estudiante: 0 };
-
-        // Contar tipos de membresías
-        Object.values(membersData).forEach(member => {
-          membershipCounts[member.membershipType]++;
-        });
-
+        Object.values(membersData).forEach(member => membershipCounts[member.membershipType]++);
         updateCharts(membershipCounts);
-      } else {
-        console.log("No data available");
       }
     }
 
-    // Función para actualizar gráficos
     function updateCharts(membershipCounts) {
-      // Gráfico de tendencia de membresías
       const trendCtx = document.getElementById('membershipTrend').getContext('2d');
       new Chart(trendCtx, {
         type: 'line',
         data: {
           labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-          datasets: [{
-            label: 'Miembros Activos',
-            data: [420, 435, 450, 465, 475, 487],  // Datos de ejemplo; puedes cambiarlos dinámicamente
-            borderColor: '#3498DB',
-            tension: 0.4,
-            fill: true,
-            backgroundColor: 'rgba(52, 152, 219, 0.1)'
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'top' }
-          },
-          scales: {
-            y: { beginAtZero: false }
-          }
+          datasets: [{ label: 'Miembros Activos', data: [420, 435, 450, 465, 475, 487], borderColor: '#3498DB', tension: 0.4, fill: true, backgroundColor: 'rgba(52, 152, 219, 0.1)' }]
         }
       });
 
-      // Gráfico de tipos de membresías
       const typesCtx = document.getElementById('membershipTypes').getContext('2d');
       new Chart(typesCtx, {
         type: 'doughnut',
         data: {
           labels: ['Premium', 'Básica', 'Estudiante'],
-          datasets: [{
-            data: [membershipCounts.Premium, membershipCounts.Básica, membershipCounts.Estudiante],
-            backgroundColor: ['#2ECC71', '#3498DB', '#E74C3C']
-          }]
+          datasets: [{ data: [membershipCounts.Premium, membershipCounts.Básica, membershipCounts.Estudiante], backgroundColor: ['#2ECC71', '#3498DB', '#E74C3C'] }]
         },
-        options: {
-          responsive: true,
-          plugins: { legend: { position: 'bottom' } },
-          cutout: '70%'
-        }
+        options: { cutout: '70%' }
       });
     }
 
-    // Guardar algunos datos de ejemplo
     saveData("001", "Juan Díaz", "Premium", "Active");
     saveData("002", "Ana Gómez", "Básica", "Active");
     saveData("003", "Luis Pérez", "Estudiante", "Active");
-
-    // Cargar datos en los gráficos después de guardar
     loadChartData();
   </script>
 
