@@ -29,6 +29,697 @@ body {
   padding: 2rem;
 }
 
+.form-container {
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-picture-container {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 1rem;
+  position: relative;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #dee2e6;
+}
+
+.profile-picture-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-picture-container .upload-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.5);
+  padding: 0.5rem;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.step-indicator {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  padding: 1rem;
+}
+
+.step::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -50%;
+  width: 100%;
+  height: 2px;
+  background: #dee2e6;
+  z-index: 1;
+}
+
+.step:last-child::after {
+  display: none;
+}
+
+.step-number {
+  width: 30px;
+  height: 30px;
+  background: #dee2e6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.step.active .step-number {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.step.completed .step-number {
+  background: var(--success-color);
+  color: white;
+}
+
+.membership-card {
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.membership-card:hover {
+  border-color: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+.membership-card.selected {
+  border-color: var(--secondary-color);
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid var(--secondary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay">
+  <div class="spinner"></div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-2 sidebar d-none d-md-block">
+      <div class="d-flex flex-column">
+        <h3 class="mb-4">GymPro</h3>
+        <nav class="nav flex-column">
+          <a href="/dashboard" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+          <a href="/members" class="nav-link active"><i class="fas fa-users"></i> Miembros</a>
+          <a href="/memberships" class="nav-link"><i class="fas fa-id-card"></i> Membresías</a>
+          <a href="/classes" class="nav-link"><i class="fas fa-dumbbell"></i> Clases</a>
+          <a href="/inventory" class="nav-link"><i class="fas fa-box"></i> Inventario</a>
+          <a href="/reports" class="nav-link"><i class="fas fa-chart-bar"></i> Reportes</a>
+          <a href="/settings" class="nav-link"><i class="fas fa-cog"></i> Configuración</a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-10 main-content">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2>Nuevo Miembro</h2>
+          <p class="text-muted">Complete la información del nuevo miembro</p>
+        </div>
+      </div>
+
+      <div class="form-container">
+        <!-- Step Indicator -->
+        <div class="step-indicator mb-4">
+          <div class="step active" id="step1">
+            <div class="step-number">1</div>
+            <div class="step-title">Información Personal</div>
+          </div>
+          <div class="step" id="step2">
+            <div class="step-number">2</div>
+            <div class="step-title">Membresía</div>
+          </div>
+          <div class="step" id="step3">
+            <div class="step-number">3</div>
+            <div class="step-title">Confirmación</div>
+          </div>
+        </div>
+
+        <!-- Form Steps -->
+        <form id="newMemberForm">
+          <!-- Step 1: Personal Information -->
+          <div id="step1Content">
+            <div class="profile-picture-container mb-4">
+              <input type="file" id="profilePicture" accept="image/*" style="display: none;">
+              <img id="previewImage" src="#" alt="" style="display: none;">
+              <i class="fas fa-user fa-3x text-muted" id="defaultIcon"></i>
+              <div class="upload-overlay">
+                <i class="fas fa-camera"></i> Subir Foto
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nombre Completo</label>
+                <input type="text" class="form-control" id="fullName" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" required>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Teléfono</label>
+                <input type="tel" class="form-control" id="phone" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Fecha de Nacimiento</label>
+                <input type="date" class="form-control" id="birthDate" required>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Dirección</label>
+                <input type="text" class="form-control" id="address" required>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Contacto de Emergencia</label>
+                <input type="text" class="form-control" id="emergencyContact" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Teléfono de Emergencia</label>
+                <input type="tel" class="form-control" id="emergencyPhone" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Membership Selection -->
+          <div id="step2Content" style="display: none;">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="membership-card" data-plan="monthly">
+                  <h4>Plan Mensual</h4>
+                  <h3>$50/mes</h3>
+                  <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success"></i> Acceso al gimnasio</li>
+                    <li><i class="fas fa-check text-success"></i> Clases básicas</li>
+                    <li><i class="fas fa-check text-success"></i> Casillero personal</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="membership-card" data-plan="quarterly">
+                  <h4>Plan Trimestral</h4>
+                  <h3>$130/3 meses</h3>
+                  <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success"></i> Todo lo del plan mensual</li>
+                    <li><i class="fas fa-check text-success"></i> Descuento del 15%</li>
+                    <li><i class="fas fa-check text-success"></i> 1 sesión PT gratis</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="membership-card" data-plan="yearly">
+                  <h4>Plan Anual</h4>
+                  <h3>$450/año</h3>
+                  <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success"></i> Todo lo anterior</li>
+                    <li><i class="fas fa-check text-success"></i> Descuento del 25%</li>
+                    <li><i class="fas fa-check text-success"></i> 4 sesiones PT gratis</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mt-4">
+              <div class="col-md-6">
+                <label class="form-label">Fecha de Inicio</label>
+                <input type="date" class="form-control" id="startDate" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Método de Pago</label>
+                <select class="form-select" id="paymentMethod" required>
+                  <option value="">Seleccionar método de pago</option>
+                  <option value="credit">Tarjeta de Crédito</option>
+                  <option value="debit">Tarjeta de Débito</option>
+                  <option value="cash">Efectivo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Confirmation -->
+          <div id="step3Content" style="display: none;">
+            <h4 class="mb-4">Resumen de la Información</h4>
+            <div class="row">
+              <div class="col-md-6">
+                <h5>Información Personal</h5>
+                <p><strong>Nombre:</strong> <span id="summaryName"></span></p>
+                <p><strong>Email:</strong> <span id="summaryEmail"></span></p>
+                <p><strong>Teléfono:</strong> <span id="summaryPhone"></span></p>
+                <p><strong>Fecha de Nacimiento:</strong> <span id="summaryBirth"></span></p>
+              </div>
+              <div class="col-md-6">
+                <h5>Detalles de Membresía</h5>
+                <p><strong>Plan Seleccionado:</strong> <span id="summaryPlan"></span></p>
+                <p><strong>Fecha de Inicio:</strong> <span id="summaryStartDate"></span></p>
+                <p><strong>Método de Pago:</strong> <span id="summaryPayment"></span></p>
+                <p><strong>Total a Pagar:</strong> <span id="summaryTotal"></span></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="d-flex justify-content-between mt-4">
+            <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+              <i class="fas fa-arrow-left"></i> Anterior
+            </button>
+            <button type="button" class="btn btn-primary" id="nextBtn">
+              Siguiente <i class="fas fa-arrow-right"></i>
+            </button>
+            <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+              <i class="fas fa-check"></i> Confirmar y Registrar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
+  authDomain: "ismakun-bf0fa.firebaseapp.com",
+  databaseURL: "https://ismakun-bf0fa-default-rtdb.firebaseio.com",
+  projectId: "ismakun-bf0fa",
+  storageBucket: "ismakun-bf0fa.appspot.com",
+  messagingSenderId: "1028877703945",
+  appId: "1:1028877703945:web:d9b0c5ff6ff890e64a51d8"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+db.enablePersistence()
+  .catch((err) => {
+    console.error("Firebase persistence error:", err);
+  });
+</script>
+
+<script type="module">
+let currentStep = 1;
+let selectedPlan = null;
+let profileImageFile = null;
+
+function showLoading() {
+  document.querySelector('.loading-overlay').style.display = 'flex';
+}
+
+function hideLoading() {
+  document.querySelector('.loading-overlay').style.display = 'none';
+}
+
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+  console.error('Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo + '\nColumn: ' + columnNo + '\nError object: ' + JSON.stringify(error));
+  return false;
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  setupEventListeners();
+  setMinDates();
+});
+
+function setupEventListeners() {
+  const profilePictureContainer = document.querySelector('.profile-picture-container');
+  const profilePictureInput = document.getElementById('profilePicture');
+  
+  profilePictureContainer.addEventListener('click', () => {
+    profilePictureInput.click();
+  });
+
+  profilePictureInput.addEventListener('change', handleProfilePictureChange);
+
+  document.querySelectorAll('.membership-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.membership-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedPlan = card.dataset.plan;
+    });
+  });
+
+  document.getElementById('prevBtn').addEventListener('click', previousStep);
+  document.getElementById('nextBtn').addEventListener('click', nextStep);
+  
+  document.getElementById('newMemberForm').addEventListener('submit', handleFormSubmit);
+}
+
+function setMinDates() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('startDate').min = today;
+  
+  const maxBirthDate = new Date();
+  maxBirthDate.setFullYear(maxBirthDate.getFullYear() - 16);
+  document.getElementById('birthDate').max = maxBirthDate.toISOString().split('T')[0];
+}
+
+function handleProfilePictureChange(e) {
+  const file = e.target.files[0];
+  if (file) {
+    if (file.size > 5 * 1024 * 1024) {
+      alert('La imagen es demasiado grande. El tamaño máximo es 5MB.');
+      return;
+    }
+    
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor seleccione un archivo de imagen válido.');
+      return;
+    }
+
+    profileImageFile = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const previewImage = document.getElementById('previewImage');
+      const defaultIcon = document.getElementById('defaultIcon');
+      previewImage.src = e.target.result;
+      previewImage.style.display = 'block';
+      defaultIcon.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function previousStep() {
+  if (currentStep > 1) {
+    currentStep--;
+    updateStepVisibility();
+  }
+}
+
+function nextStep() {
+  if (validateCurrentStep()) {
+    if (currentStep < 3) {
+      currentStep++;
+      updateStepVisibility();
+      if (currentStep === 3) {
+        updateSummary();
+      }
+    }
+  }
+}
+
+function validateCurrentStep() {
+  if (currentStep === 1) {
+    const requiredFields = ['fullName', 'email', 'phone', 'birthDate', 'address', 'emergencyContact', 'emergencyPhone'];
+    return validateFields(requiredFields);
+  } else if (currentStep === 2) {
+    if (!selectedPlan) {
+      alert('Por favor seleccione un plan de membresía');
+      return false;
+    }
+    const requiredFields = ['startDate', 'paymentMethod'];
+    return validateFields(requiredFields);
+  } else if (currentStep === 3) {
+    const allFields = ['fullName', 'email', 'phone', 'birthDate', 'address', 'emergencyContact', 'emergencyPhone', 'startDate', 'paymentMethod'];
+    if (!selectedPlan) {
+      alert('Por favor seleccione un plan de membresía');
+      return false;
+    }
+    return validateFields(allFields);
+  }
+  return true;
+}
+
+function validateFields(fields) {
+  let isValid = true;
+  fields.forEach(field => {
+    const element = document.getElementById(field);
+    if (!element.value) {
+      element.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      element.classList.remove('is-invalid');
+    }
+  });
+  if (!isValid) {
+    alert('Por favor complete todos los campos requeridos');
+  }
+  return isValid;
+}
+
+function updateStepVisibility() {
+  for (let i = 1; i <= 3; i++) {
+    const content = document.getElementById(`step${i}Content`);
+    content.style.display = i === currentStep ? 'block' : 'none';
+  }
+
+  for (let i = 1; i <= 3; i++) {
+    const step = document.getElementById(`step${i}`);
+    if (i < currentStep) {
+      step.classList.add('completed');
+      step.classList.remove('active');
+    } else if (i === currentStep) {
+      step.classList.add('active');
+      step.classList.remove('completed');
+    } else {
+      step.classList.remove('completed', 'active');
+    }
+  }
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+
+  prevBtn.style.display = currentStep === 1 ? 'none' : 'block';
+  nextBtn.style.display = currentStep === 3 ? 'none' : 'block';
+  submitBtn.style.display = currentStep === 3 ? 'block' : 'none';
+}
+
+function updateSummary() {
+  document.getElementById('summaryName').textContent = document.getElementById('fullName').value;
+  document.getElementById('summaryEmail').textContent = document.getElementById('email').value;
+  document.getElementById('summaryPhone').textContent = document.getElementById('phone').value;
+  document.getElementById('summaryBirth').textContent = document.getElementById('birthDate').value;
+  
+  const planNames = {
+    monthly: 'Mensual',
+    quarterly: 'Trimestral',
+    yearly: 'Anual'
+  };
+  
+  const planPrices = {
+    monthly: '$50',
+    quarterly: '$130',
+    yearly: '$450'
+  };
+
+  document.getElementById('summaryPlan').textContent = planNames[selectedPlan];
+  document.getElementById('summaryStartDate').textContent = document.getElementById('startDate').value;
+  document.getElementById('summaryPayment').textContent = document.getElementById('paymentMethod').value;
+  document.getElementById('summaryTotal').textContent = planPrices[selectedPlan];
+}
+
+async function handleFormSubmit(e) {
+  e.preventDefault();
+  console.log("Form submission started");
+
+  if (!validateCurrentStep()) {
+    console.log("Validation failed");
+    return;
+  }
+
+  showLoading();
+  console.log("Loading shown");
+
+  try {
+    let profileImageUrl = '';
+    if (profileImageFile) {
+      console.log("Uploading profile image");
+      try {
+        const storageRef = storage.ref(`profile-pictures/${Date.now()}-${profileImageFile.name}`);
+        const uploadTask = await storageRef.put(profileImageFile);
+        profileImageUrl = await uploadTask.ref.getDownloadURL();
+        console.log("Image uploaded successfully:", profileImageUrl);
+      } catch (imageError) {
+        console.error('Error uploading image:', imageError);
+        throw new Error('Error al subir la imagen de perfil');
+      }
+    }
+
+    const memberData = {
+      fullName: document.getElementById('fullName').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      birthDate: document.getElementById('birthDate').value,
+      address: document.getElementById('address').value.trim(),
+      emergencyContact: document.getElementById('emergencyContact').value.trim(),
+      emergencyPhone: document.getElementById('emergencyPhone').value.trim(),
+      profilePicture: profileImageUrl,
+      status: 'active',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    console.log("Member data prepared:", memberData);
+
+    const memberRef = await db.collection('members').add(memberData);
+    console.log("Member document created with ID:", memberRef.id);
+
+    const membershipData = {
+      memberId: memberRef.id,
+      plan: selectedPlan,
+      startDate: document.getElementById('startDate').value,
+      paymentMethod: document.getElementById('paymentMethod').value,
+      status: 'active',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      endDate: calculateEndDate(document.getElementById('startDate').value, selectedPlan)
+    };
+
+    console.log("Membership data prepared:", membershipData);
+
+    const membershipRef = await db.collection('memberships').add(membershipData);
+    console.log("Membership document created with ID:", membershipRef.id);
+
+    await db.collection('activity').add({
+      type: 'new-member',
+      memberId: memberRef.id,
+      description: `Nuevo miembro registrado: ${memberData.fullName}`,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    console.log("Activity log created");
+
+    hideLoading();
+    alert('¡Miembro registrado exitosamente!');
+    window.location.href = '/members/memberships/members';
+
+  } catch (error) {
+    console.error('Error al registrar miembro:', error);
+    hideLoading();
+    alert(`Error al registrar miembro: ${error.message}`);
+  }
+}
+
+function calculateEndDate(startDate, plan) {
+  const date = new Date(startDate);
+  switch (plan) {
+    case 'monthly':
+      date.setMonth(date.getMonth() + 1);
+      break;
+    case 'quarterly':
+      date.setMonth(date.getMonth() + 3);
+      break;
+    case 'yearly':
+      date.setFullYear(date.getFullYear() + 1);
+      break;
+  }
+  return date.toISOString().split('T')[0];
+}
+
+document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const href = e.target.closest('a').getAttribute('href');
+    window.location.href = `/members/memberships${href}`;
+  });
+});
+</script>
+
+</body>
+</html><html><head><base href="/members/memberships/members/new">
+<title>GymPro - Nuevo Miembro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+  --primary-color: #2C3E50;
+  --secondary-color: #3498DB;
+  --accent-color: #E74C3C;
+  --background-light: #ECF0F1;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background-light);
+}
+
+.sidebar {
+  background: white;
+  height: 100vh;
+  padding: 2rem 1rem;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.main-content {
+  padding: 2rem;
+}
+
 .form-section {
   background: white;
   border-radius: 10px;
