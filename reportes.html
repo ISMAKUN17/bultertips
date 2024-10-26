@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <title>Reportes de Ventas</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="#">Gimnasio</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="miembros.html" class="nav-link text-white">Miembros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="reportes.html" class="nav-link text-white">Reportes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="configuracion.html" class="nav-link text-white">Configuración</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <h2>Reportes de Ventas</h2>
+        <div id="salesReport"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="firebaseConfig.js"></script>
+    <script>
+        const salesReportDiv = document.getElementById('salesReport');
+
+        // Obtener reportes de ventas de Firebase
+        const db = firebase.database();
+        db.ref('sales/').once('value').then((snapshot) => {
+            let report = '<ul class="list-group">';
+            snapshot.forEach((childSnapshot) => {
+                const sale = childSnapshot.val();
+                report += `<li class="list-group-item">Producto: ${sale.product}, Cantidad: ${sale.quantity}, Fecha: ${sale.date}</li>`;
+            });
+            report += '</ul>';
+            salesReportDiv.innerHTML = report;
+        }).catch((error) => {
+            console.error("Error al obtener reportes de ventas: ", error);
+        });
+    </script>
+</body>
+</html>
