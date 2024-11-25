@@ -330,94 +330,400 @@
 let transactions = [];
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Firebase with error handling
-    try {
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
-            authDomain: "ismakun-bf0fa.firebaseapp.com",
-            databaseURL: "https://ismakun-bf0fa-default-rtdb.firebaseio.com",
-            projectId: "ismakun-bf0fa",
-            storageBucket: "ismakun-bf0fa.firebasestorage.app",
-            messagingSenderId: "1028877703945",
-            appId: "1:1028877703945:web:331de48acbcdf2234a51d8"
-        };
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
+        authDomain: "ismakun-bf0fa.firebaseapp.com",
+        databaseURL: "https://ismakun-bf0fa-default-rtdb.firebaseio.com",
+        projectId: "ismakun-bf0fa",
+        storageBucket: "ismakun-bf0fa.firebasestorage.app",
+        messagingSenderId: "1028877703945",
+        appId: "1:1028877703945:web:331de48acbcdf2234a51d8"
+    };
 
-        // Check if Firebase is already initialized
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        
-        // Get database reference
-        const database = firebase.database();
-        window.database = database; // Make database accessible globally
-
-        // Add error event listener to window
-        window.addEventListener('error', function(e) {
-            console.error('Global error handler:', e.error);
-            // Show user-friendly error message
-            alert('An error occurred. Please refresh the page and try again.');
-        });
-
-        // Initialize the app components
-        setupRealtimeListener();
-        
-        // Add tab change listeners
-        document.querySelector('a[data-bs-target="#transactions"]').addEventListener('click', updateTransactionsTab);
-        document.querySelector('a[data-bs-target="#pending"]').addEventListener('click', updatePendingTab);
-        
-        // Add filter event listeners
-        ['filterReceiver', 'filterType', 'filterStatus', 'filterCurrency'].forEach(filterId => {
-            const element = document.getElementById(filterId);
-            if (element) {
-                element.addEventListener('change', updateTransactionsTab);
-            }
-        });
-        
-        // Add export button listener
-        const exportButton = document.getElementById('exportTransactions');
-        if (exportButton) {
-            exportButton.addEventListener('click', exportTransactions);
-        }
-
-    } catch (error) {
-        console.error('Firebase initialization error:', error);
-        alert('Error initializing the application. Please check your internet connection and try again.');
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
     }
+    const database = firebase.database();
+    window.database = database; // Make database accessible globally
+
+    // Initial load of transactions
+    setupRealtimeListener();
+    document.querySelector('a[data-bs-target="#transactions"]').addEventListener('click', updateTransactionsTab);
+    document.querySelector('a[data-bs-target="#pending"]').addEventListener('click', updatePendingTab);
+
+    // Add filter event listeners
+    ['filterReceiver', 'filterType', 'filterStatus', 'filterCurrency'].forEach(filterId => {
+        document.getElementById(filterId).addEventListener('change', updateTransactionsTab);
+    });
+    
+    // Add export button listener
+    document.getElementById('exportTransactions').addEventListener('click', exportTransactions);
 });
 
-// Add this helper function for Firebase error handling
 function handleFirebaseError(error) {
     console.error('Firebase Error:', error);
     alert('Error connecting to database. Please check your connection and try again.');
 }
 
-// Update the setupRealtimeListener function with error handling
 function setupRealtimeListener() {
     try {
-        database.ref('transactions').on('value', 
-            (snapshot) => {
-                try {
-                    transactions = [];
-                    snapshot.forEach((childSnapshot) => {
-                        transactions.push({
-                            ...childSnapshot.val(),
-                            key: childSnapshot.key
-                        });
-                    });
-                    updateDashboard();
-                    updateTransactionsTab();
-                    updatePendingTab();
-                } catch (error) {
-                    console.error('Error processing transaction data:', error);
-                }
-            },
-            (error) => {
-                handleFirebaseError(error);
-            }
-        );
+        database.ref('transactions').on('value', (snapshot) => {
+            transactions = [];
+            snapshot.forEach((childSnapshot) => {
+                transactions.push({
+                    ...childSnapshot.val(),
+                    key: childSnapshot.key
+                });
+            });
+            updateDashboard();
+            updateTransactionsTab();
+            updatePendingTab();
+        }, handleFirebaseError);
     } catch (error) {
         handleFirebaseError(error);
+    }
+}
+
+function updatePendingTab() {
+    const pendingTransactions = transactions.filter(t => t.status === 'pending');
+    const pendingTabContent = document.getElementById('pending');
+    
+    pendingTabContent.innerHTML = `
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1>Pagos Pendientes</h1>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card dashboard-card">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0">Ismael - Pagos Pendientes</h5>
+                    </div>
+                    <div class="card-body" id="ismaelPendingList">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card dashboard-card">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0">Nathanael - Pagos Pendientes</h5>
+                    </div>
+                    <div class="card-body" id="nathanaelPendingList">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Receptor</th>
+                        <th>Debe Pagar</th>
+                        <th>Monto Original</th>
+                        <th>Tipo</th>
+                        <th>Observaciones</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingTransactionsTable">
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    // Process pending transactions
+    const ismaelPending = {USD: 0, DOP: 0, EUR: 0, MXN: 0};
+    const nathanaelPending = {USD: 0, DOP: 0, EUR: 0, MXN: 0};
+    
+    pendingTransactions.forEach(transaction => {
+        const amount = parseFloat(transaction.amount);
+        const splitAmount = amount / 2;
+        
+        if (transaction.receiver === 'Ismael') {
+            ismaelPending[transaction.currency] += splitAmount;
+        } else {
+            nathanaelPending[transaction.currency] += splitAmount;
+        }
+    });
+
+    // Update summary cards
+    const ismaelList = document.getElementById('ismaelPendingList');
+    const nathanaelList = document.getElementById('nathanaelPendingList');
+    
+    ismaelList.innerHTML = generatePendingSummary(ismaelPending);
+    nathanaelList.innerHTML = generatePendingSummary(nathanaelPending);
+
+    // Update pending transactions table
+    const pendingTable = document.getElementById('pendingTransactionsTable');
+    pendingTable.innerHTML = '';
+
+    pendingTransactions.forEach(transaction => {
+        const splitAmount = parseFloat(transaction.amount) / 2;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${new Date(transaction.date).toLocaleDateString()}</td>
+            <td>${transaction.receiver}</td>
+            <td>
+                <span class="badge bg-warning text-dark">
+                    ${formatCurrency(splitAmount, transaction.currency)}
+                </span>
+            </td>
+            <td>${formatCurrency(transaction.amount, transaction.currency)}</td>
+            <td>
+                <span class="badge bg-info">
+                    ${transaction.type === 'tip' ? 'Propina' : 
+                      transaction.type === 'commission' ? 'Comisión' : 'Venta'}
+                </span>
+            </td>
+            <td>${transaction.observations || '-'}</td>
+            <td>
+                <button class="btn btn-sm btn-success" onclick="markAsPaid('${transaction.key}')" title="Marcar como pagado">
+                    <i class="fas fa-check"></i> Marcar Pagado
+                </button>
+            </td>
+        `;
+        pendingTable.appendChild(row);
+    });
+
+    if (pendingTransactions.length === 0) {
+        pendingTable.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center p-4">
+                    <i class="fas fa-check-circle text-success fs-4 mb-3"></i>
+                    <p class="mb-0">¡No hay pagos pendientes!</p>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// Helper function to generate pending summary
+function generatePendingSummary(pendingAmounts) {
+    return Object.entries(pendingAmounts)
+        .filter(([_, amount]) => amount > 0)
+        .map(([currency, amount]) => `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span>${currency}:</span>
+                <span class="badge bg-warning text-dark fs-6">
+                    ${formatCurrency(amount, currency)}
+                </span>
+            </div>
+        `).join('') || '<p class="text-center mb-0">No hay pagos pendientes</p>';
+}
+
+function formatCurrency(amount, currency) {
+    return `${currency === 'USD' ? '$' : currency === 'DOP' ? 'RD$' : currency} ${parseFloat(amount).toFixed(2)}`;
+}
+
+function sortTransactions(column) {
+    let sortDirection = 'asc';
+    const transactionsTableBody = document.getElementById('transactionsTableBody');
+    const currentSort = transactionsTableBody.getAttribute('data-sort');
+    
+    if (currentSort === column) {
+        sortDirection = transactionsTableBody.getAttribute('data-direction') === 'asc' ? 'desc' : 'asc';
+    }
+    
+    transactionsTableBody.setAttribute('data-sort', column);
+    transactionsTableBody.setAttribute('data-direction', sortDirection);
+    
+    transactions.sort((a, b) => {
+        let comparison = 0;
+        switch(column) {
+            case 'date':
+                comparison = new Date(a.date) - new Date(b.date);
+                break;
+            case 'amount':
+                comparison = parseFloat(a.amount) - parseFloat(b.amount);
+                break;
+            default:
+                comparison = a[column]?.localeCompare(b[column]);
+        }
+        return sortDirection === 'asc' ? comparison : -comparison;
+    });
+    
+    updateTransactionsTab();
+}
+
+function exportTransactions() {
+    const filteredTransactions = [...transactions];
+    let csv = 'Fecha,Receptor,Tipo,Monto,Moneda,Estado,Observaciones\n';
+    
+    filteredTransactions.forEach(t => {
+        csv += `${new Date(t.date).toLocaleDateString()},`;
+        csv += `${t.receiver},`;
+        csv += `${t.type},`;
+        csv += `${t.amount},`;
+        csv += `${t.currency},`;
+        csv += `${t.status},`;
+        csv += `${t.observations || ''}\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'transacciones.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+function updateTransactionsTab() {
+    const transactionsTableBody = document.getElementById('transactionsTableBody');
+    transactionsTableBody.innerHTML = '';
+
+    let filteredTransactions = [...transactions];
+    
+    // Apply filters
+    const filterReceiver = document.getElementById('filterReceiver').value;
+    const filterType = document.getElementById('filterType').value;
+    const filterStatus = document.getElementById('filterStatus').value;
+    const filterCurrency = document.getElementById('filterCurrency').value;
+
+    if (filterReceiver) {
+        filteredTransactions = filteredTransactions.filter(t => t.receiver === filterReceiver);
+    }
+    if (filterType) {
+        filteredTransactions = filteredTransactions.filter(t => t.type === filterType);
+    }
+    if (filterStatus) {
+        filteredTransactions = filteredTransactions.filter(t => t.status === filterStatus);
+    }
+    if (filterCurrency) {
+        filteredTransactions = filteredTransactions.filter(t => t.currency === filterCurrency);
+    }
+
+    // Add sort functionality to table headers
+    document.querySelectorAll('th i.fa-sort').forEach(icon => {
+        const column = icon.parentElement.textContent.trim().toLowerCase();
+        icon.parentElement.style.cursor = 'pointer';
+        icon.parentElement.onclick = () => sortTransactions(column);
+    });
+
+    // Sort transactions by date (most recent first)
+    filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Add export button functionality
+    document.getElementById('exportTransactions').onclick = exportTransactions;
+
+    filteredTransactions.forEach(transaction => {
+        const row = document.createElement('tr');
+        const date = new Date(transaction.date).toLocaleDateString();
+        
+        let typeLabel = {
+            'tip': 'Propina',
+            'commission': 'Comisión',
+            'sale': 'Venta'
+        }[transaction.type] || transaction.type;
+
+        row.innerHTML = `
+            <td>${date}</td>
+            <td>${transaction.receiver}</td>
+            <td><span class="badge bg-info">${typeLabel}</span></td>
+            <td class="text-end">
+                <span class="currency-symbol">${transaction.currency}</span> 
+                ${parseFloat(transaction.amount).toFixed(2)}
+            </td>
+            <td>
+                <span class="badge ${transaction.status === 'pending' ? 'bg-warning' : 'bg-success'}">
+                    ${transaction.status === 'pending' ? 'Pendiente' : 'Pagado'}
+                </span>
+            </td>
+            <td>${transaction.observations || '-'}</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-primary" onclick="editTransaction('${transaction.key}')" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="markAsPaid('${transaction.key}')" 
+                            title="Marcar como pagado" ${transaction.status === 'paid' ? 'disabled' : ''}>
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction('${transaction.key}')" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        transactionsTableBody.appendChild(row);
+    });
+
+    // Add no results message if needed
+    if (filteredTransactions.length === 0) {
+        transactionsTableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center p-3">
+                    <i class="fas fa-search me-2"></i>
+                    No se encontraron transacciones
+                </td>
+            </tr>
+        `;
+    }
+}
+
+function editTransaction(key) {
+    const transaction = transactions.find(t => t.key === key);
+    if (!transaction) return;
+
+    // Populate modal with transaction data
+    const form = document.getElementById('transactionForm');
+    form.querySelector('[name="receiver"]').value = transaction.receiver;
+    form.querySelector('[name="type"]').value = transaction.type;
+    form.querySelector('[name="amount"]').value = transaction.amount;
+    form.querySelector('[name="currency"]').value = transaction.currency;
+    form.querySelector('[name="observations"]').value = transaction.observations || '';
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('newTransactionModal'));
+    modal.show();
+
+    // Update save button to handle edit
+    document.getElementById('saveTransaction').onclick = function() {
+        const formData = new FormData(form);
+        const updatedTransaction = {
+            ...transaction,
+            receiver: formData.get('receiver'),
+            type: formData.get('type'),
+            amount: parseFloat(formData.get('amount')),
+            currency: formData.get('currency'),
+            observations: formData.get('observations')
+        };
+
+        database.ref(`transactions/${key}`).update(updatedTransaction)
+            .then(() => {
+                modal.hide();
+                form.reset();
+            })
+            .catch(error => {
+                console.error('Error updating transaction:', error);
+                alert('Error updating transaction. Please try again.');
+            });
+    };
+}
+
+function markAsPaid(key) {
+    if (confirm('¿Marcar esta transacción como pagada?')) {
+        database.ref(`transactions/${key}`).update({ status: 'paid' })
+            .catch(error => {
+                console.error('Error updating transaction status:', error);
+                alert('Error updating transaction status. Please try again.');
+            });
+    }
+}
+
+function deleteTransaction(key) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta transacción?')) {
+        database.ref(`transactions/${key}`).remove()
+            .catch(error => {
+                console.error('Error deleting transaction:', error);
+                alert('Error deleting transaction. Please try again.');
+            });
     }
 }
 </script>
