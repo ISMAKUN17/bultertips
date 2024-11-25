@@ -258,7 +258,27 @@
 
                 <!-- Pending Tab -->
                 <div class="tab-pane fade" id="pending">
-                    <!-- Pending content -->
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1>Transacciones Pendientes</h1>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Receptor</th>
+                                    <th>Tipo</th>
+                                    <th>Monto</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendingTransactionsTable">
+                                <!-- Pending transactions will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
@@ -330,6 +350,8 @@
 let transactions = [];
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing application...');
+    
     // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
@@ -348,6 +370,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const database = firebase.database();
     window.database = database; // Make database accessible globally
 
+    // Add error handlers to Firebase operations
+    database.ref('.info/connected').on('value', function(snap) {
+        if (snap.val() === true) {
+            console.log('Connected to Firebase');
+        } else {
+            console.log('Disconnected from Firebase');
+        }
+    });
+
+    // Test database connection
+    database.ref('transactions').once('value')
+        .then(snapshot => {
+            console.log('Initial data load successful');
+        })
+        .catch(error => {
+            console.error('Error in initial data load:', error);
+        });
+
     // Initial load of transactions
     setupRealtimeListener();
     document.querySelector('a[data-bs-target="#transactions"]').addEventListener('click', updateTransactionsTab);
@@ -360,218 +400,186 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add export button listener
     document.getElementById('exportTransactions').addEventListener('click', exportTransactions);
+    
+    // Add save transaction handler
+    document.getElementById('saveTransaction').addEventListener('click', saveNewTransaction);
 });
-
-function handleFirebaseError(error) {
-    console.error('Firebase Error:', error);
-    alert('Error connecting to database. Please check your connection and try again.');
-}
 
 function setupRealtimeListener() {
     try {
-        database.ref('transactions').on('value', (snapshot) => {
+        const transactionsRef = database.ref('transactions');
+        
+        // Listen for data changes
+        transactionsRef.on('value', (snapshot) => {
+            console.log('Data received from Firebase:', snapshot.val());
             transactions = [];
+            
             snapshot.forEach((childSnapshot) => {
-                transactions.push({
+                const transaction = {
                     ...childSnapshot.val(),
                     key: childSnapshot.key
-                });
+                };
+                transactions.push(transaction);
             });
+            
+            console.log('Processed transactions:', transactions);
+            
+            // Update all views
             updateDashboard();
             updateTransactionsTab();
             updatePendingTab();
-        }, handleFirebaseError);
+        }, (error) => {
+            console.error('Error fetching data:', error);
+            alert('Error al cargar los datos. Por favor, recarga la página.');
+        });
     } catch (error) {
-        handleFirebaseError(error);
+        console.error('Setup error:', error);
+        alert('Error al configurar la conexión con la base de datos.');
     }
 }
 
-function updatePendingTab() {
-    const pendingTransactions = transactions.filter(t => t.status === 'pending');
-    const pendingTabContent = document.getElementById('pending');
+function updateDashboard() {
+    // Calculate monthly totals per currency
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
     
-    pendingTabContent.innerHTML = `
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1>Pagos Pendientes</h1>
-        </div>
+    const monthlyTotals = {
+        USD: 0,
+        DOP: 0,
+        EUR: 0,
+        MXN: 0
+    };
 
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card dashboard-card">
-                    <div class="card-header bg-warning text-white">
-                        <h5 class="mb-0">Ismael - Pagos Pendientes</h5>
-                    </div>
-                    <div class="card-body" id="ismaelPendingList">
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card dashboard-card">
-                    <div class="card-header bg-warning text-white">
-                        <h5 class="mb-0">Nathanael - Pagos Pendientes</h5>
-                    </div>
-                    <div class="card-body" id="nathanaelPendingList">
-                    </div>
-                </div>
-            </div>
-        </div>
+    // Calculate debts per currency
+    const ismaelDebts = {
+        USD: 0,
+        DOP: 0,
+        EUR: 0,
+        MXN: 0
+    };
 
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Receptor</th>
-                        <th>Debe Pagar</th>
-                        <th>Monto Original</th>
-                        <th>Tipo</th>
-                        <th>Observaciones</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="pendingTransactionsTable">
-                </tbody>
-            </table>
-        </div>
-    `;
+    const nathanaelDebts = {
+        USD: 0,
+        DOP: 0,
+        EUR: 0,
+        MXN: 0
+    };
 
-    // Process pending transactions
-    const ismaelPending = {USD: 0, DOP: 0, EUR: 0, MXN: 0};
-    const nathanaelPending = {USD: 0, DOP: 0, EUR: 0, MXN: 0};
-    
-    pendingTransactions.forEach(transaction => {
+    transactions.forEach(transaction => {
+        const transactionDate = new Date(transaction.date);
         const amount = parseFloat(transaction.amount);
-        const splitAmount = amount / 2;
+        const currency = transaction.currency;
         
-        if (transaction.receiver === 'Ismael') {
-            ismaelPending[transaction.currency] += splitAmount;
-        } else {
-            nathanaelPending[transaction.currency] += splitAmount;
+        // Calculate monthly totals
+        if (transactionDate.getMonth() === currentMonth && 
+            transactionDate.getFullYear() === currentYear) {
+            monthlyTotals[currency] += amount;
+        }
+
+        // Calculate pending debts
+        if (transaction.status === 'pending') {
+            const splitAmount = amount / 2;
+            if (transaction.receiver === 'Ismael') {
+                nathanaelDebts[currency] += splitAmount;
+            } else {
+                ismaelDebts[currency] += splitAmount;
+            }
         }
     });
 
-    // Update summary cards
-    const ismaelList = document.getElementById('ismaelPendingList');
-    const nathanaelList = document.getElementById('nathanaelPendingList');
-    
-    ismaelList.innerHTML = generatePendingSummary(ismaelPending);
-    nathanaelList.innerHTML = generatePendingSummary(nathanaelPending);
-
-    // Update pending transactions table
-    const pendingTable = document.getElementById('pendingTransactionsTable');
-    pendingTable.innerHTML = '';
-
-    pendingTransactions.forEach(transaction => {
-        const splitAmount = parseFloat(transaction.amount) / 2;
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${new Date(transaction.date).toLocaleDateString()}</td>
-            <td>${transaction.receiver}</td>
-            <td>
-                <span class="badge bg-warning text-dark">
-                    ${formatCurrency(splitAmount, transaction.currency)}
-                </span>
-            </td>
-            <td>${formatCurrency(transaction.amount, transaction.currency)}</td>
-            <td>
-                <span class="badge bg-info">
-                    ${transaction.type === 'tip' ? 'Propina' : 
-                      transaction.type === 'commission' ? 'Comisión' : 'Venta'}
-                </span>
-            </td>
-            <td>${transaction.observations || '-'}</td>
-            <td>
-                <button class="btn btn-sm btn-success" onclick="markAsPaid('${transaction.key}')" title="Marcar como pagado">
-                    <i class="fas fa-check"></i> Marcar Pagado
-                </button>
-            </td>
-        `;
-        pendingTable.appendChild(row);
-    });
-
-    if (pendingTransactions.length === 0) {
-        pendingTable.innerHTML = `
-            <tr>
-                <td colspan="7" class="text-center p-4">
-                    <i class="fas fa-check-circle text-success fs-4 mb-3"></i>
-                    <p class="mb-0">¡No hay pagos pendientes!</p>
-                </td>
-            </tr>
-        `;
-    }
+    // Update UI
+    updateTotalsDisplay('monthlyTotal', monthlyTotals);
+    updateTotalsDisplay('ismaelDebt', ismaelDebts);
+    updateTotalsDisplay('nathanaelDebt', nathanaelDebts);
+    updateRecentTransactions();
 }
 
-// Helper function to generate pending summary
-function generatePendingSummary(pendingAmounts) {
-    return Object.entries(pendingAmounts)
+function updateTotalsDisplay(elementId, totals) {
+    const element = document.getElementById(elementId);
+    const html = Object.entries(totals)
         .filter(([_, amount]) => amount > 0)
         .map(([currency, amount]) => `
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span>${currency}:</span>
-                <span class="badge bg-warning text-dark fs-6">
-                    ${formatCurrency(amount, currency)}
-                </span>
+            <div class="currency-amount">
+                ${formatCurrency(amount, currency)}
             </div>
-        `).join('') || '<p class="text-center mb-0">No hay pagos pendientes</p>';
-}
-
-function formatCurrency(amount, currency) {
-    return `${currency === 'USD' ? '$' : currency === 'DOP' ? 'RD$' : currency} ${parseFloat(amount).toFixed(2)}`;
-}
-
-function sortTransactions(column) {
-    let sortDirection = 'asc';
-    const transactionsTableBody = document.getElementById('transactionsTableBody');
-    const currentSort = transactionsTableBody.getAttribute('data-sort');
+        `).join('');
     
-    if (currentSort === column) {
-        sortDirection = transactionsTableBody.getAttribute('data-direction') === 'asc' ? 'desc' : 'asc';
+    element.innerHTML = html || '$0.00';
+}
+
+function updateRecentTransactions() {
+    const recentTransactionsTable = document.getElementById('recentTransactionsTable');
+    const recentTransactions = [...transactions]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 5);
+
+    recentTransactionsTable.innerHTML = recentTransactions.map(transaction => `
+        <tr>
+            <td>${new Date(transaction.date).toLocaleDateString()}</td>
+            <td>${transaction.receiver}</td>
+            <td><span class="badge bg-info">${
+                transaction.type === 'tip' ? 'Propina' : 
+                transaction.type === 'commission' ? 'Comisión' : 'Venta'
+            }</span></td>
+            <td class="text-end">
+                <span class="currency-symbol">${transaction.currency}</span> 
+                ${parseFloat(transaction.amount).toFixed(2)}
+            </td>
+            <td>
+                <span class="badge ${transaction.status === 'pending' ? 'bg-warning' : 'bg-success'}">
+                    ${transaction.status === 'pending' ? 'Pendiente' : 'Pagado'}
+                </span>
+            </td>
+        </tr>
+    `).join('') || `
+        <tr>
+            <td colspan="5" class="text-center p-3">
+                <i class="fas fa-info-circle me-2"></i>
+                No hay transacciones recientes
+            </td>
+        </tr>
+    `;
+}
+
+function saveNewTransaction() {
+    const form = document.getElementById('transactionForm');
+    const formData = new FormData(form);
+    
+    const newTransaction = {
+        receiver: formData.get('receiver'),
+        type: formData.get('type'),
+        amount: parseFloat(formData.get('amount')),
+        currency: formData.get('currency'),
+        observations: formData.get('observations') || '',
+        date: new Date().toISOString(),
+        status: 'pending'
+    };
+
+    // Validate data before saving
+    if (!newTransaction.amount || isNaN(newTransaction.amount)) {
+        alert('Por favor ingrese un monto válido');
+        return;
     }
-    
-    transactionsTableBody.setAttribute('data-sort', column);
-    transactionsTableBody.setAttribute('data-direction', sortDirection);
-    
-    transactions.sort((a, b) => {
-        let comparison = 0;
-        switch(column) {
-            case 'date':
-                comparison = new Date(a.date) - new Date(b.date);
-                break;
-            case 'amount':
-                comparison = parseFloat(a.amount) - parseFloat(b.amount);
-                break;
-            default:
-                comparison = a[column]?.localeCompare(b[column]);
-        }
-        return sortDirection === 'asc' ? comparison : -comparison;
-    });
-    
-    updateTransactionsTab();
-}
 
-function exportTransactions() {
-    const filteredTransactions = [...transactions];
-    let csv = 'Fecha,Receptor,Tipo,Monto,Moneda,Estado,Observaciones\n';
-    
-    filteredTransactions.forEach(t => {
-        csv += `${new Date(t.date).toLocaleDateString()},`;
-        csv += `${t.receiver},`;
-        csv += `${t.type},`;
-        csv += `${t.amount},`;
-        csv += `${t.currency},`;
-        csv += `${t.status},`;
-        csv += `${t.observations || ''}\n`;
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.setAttribute('hidden', '');
-    a.setAttribute('href', url);
-    a.setAttribute('download', 'transacciones.csv');
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    // Show loading indicator
+    document.getElementById('loadingIndicator').style.display = 'block';
+
+    // Save to Firebase
+    database.ref('transactions').push(newTransaction)
+        .then(() => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newTransactionModal'));
+            modal.hide();
+            form.reset();
+            alert('Transacción guardada exitosamente');
+        })
+        .catch(error => {
+            console.error('Error saving transaction:', error);
+            alert('Error al guardar la transacción: ' + error.message);
+        })
+        .finally(() => {
+            document.getElementById('loadingIndicator').style.display = 'none';
+        });
 }
 
 function updateTransactionsTab() {
@@ -599,18 +607,8 @@ function updateTransactionsTab() {
         filteredTransactions = filteredTransactions.filter(t => t.currency === filterCurrency);
     }
 
-    // Add sort functionality to table headers
-    document.querySelectorAll('th i.fa-sort').forEach(icon => {
-        const column = icon.parentElement.textContent.trim().toLowerCase();
-        icon.parentElement.style.cursor = 'pointer';
-        icon.parentElement.onclick = () => sortTransactions(column);
-    });
-
     // Sort transactions by date (most recent first)
     filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    // Add export button functionality
-    document.getElementById('exportTransactions').onclick = exportTransactions;
 
     filteredTransactions.forEach(transaction => {
         const row = document.createElement('tr');
@@ -665,6 +663,72 @@ function updateTransactionsTab() {
             </tr>
         `;
     }
+}
+
+function updatePendingTab() {
+    const pendingTab = document.getElementById('pending');
+    const pendingTransactions = transactions.filter(t => t.status === 'pending');
+
+    pendingTab.innerHTML = `
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1>Transacciones Pendientes</h1>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Receptor</th>
+                        <th>Tipo</th>
+                        <th>Monto</th>
+                        <th>Observaciones</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${pendingTransactions.length ? pendingTransactions.map(t => `
+                        <tr>
+                            <td>${new Date(t.date).toLocaleDateString()}</td>
+                            <td>${t.receiver}</td>
+                            <td><span class="badge bg-info">${
+                                t.type === 'tip' ? 'Propina' : 
+                                t.type === 'commission' ? 'Comisión' : 'Venta'
+                            }</span></td>
+                            <td>
+                                <span class="currency-symbol">${t.currency}</span> 
+                                ${parseFloat(t.amount).toFixed(2)}
+                            </td>
+                            <td>${t.observations || '-'}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-success" onclick="markAsPaid('${t.key}')" title="Marcar como pagado">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('') : `
+                        <tr>
+                            <td colspan="6" class="text-center p-3">
+                                <i class="fas fa-check-circle me-2"></i>
+                                No hay transacciones pendientes
+                            </td>
+                        </tr>
+                    `}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function formatCurrency(amount, currency) {
+    const formatter = new Intl.NumberFormat('es-DO', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 2
+    });
+    return formatter.format(amount);
 }
 
 function editTransaction(key) {
