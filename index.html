@@ -1,53 +1,384 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <title>Gestión de Gimnasio</title>
+<html><head><base href="." />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Control de Ingresos</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+<!-- Animate.css -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+
+<style>
+.currency-symbol {
+    font-weight: bold;
+    color: #2d4f83;
+}
+
+.dashboard-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.card-text {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.currency-amount {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.currency-amount:last-child {
+    margin-bottom: 0;
+}
+
+.sidebar {
+    min-height: 100vh;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link {
+    padding: 0.8rem 1rem;
+    margin: 0.2rem 0;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.modal-content {
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.form-select, .form-control {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+}
+</style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand text-white" href="#">Gimnasio</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a href="miembros.html" class="nav-link text-white">Miembros</a></li>
-                    <li class="nav-item"><a href="reportes.html" class="nav-link text-white">Reportes</a></li>
-                    <li class="nav-item"><a href="configuracion.html" class="nav-link text-white">Configuración</a></li>
-                    <li class="nav-item"><a href="clases.html" class="nav-link text-white">Clases</a></li>
-                    <li class="nav-item"><a href="ventas.html" class="nav-link text-white">Ventas</a></li>
-                    <li class="nav-item"><a href="salud.html" class="nav-link text-white">Salud</a></li>
+<body class="bg-light">
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active text-white" href="#" data-bs-toggle="tab" data-bs-target="#dashboard">
+                            <i class="fas fa-chart-line me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#" data-bs-toggle="tab" data-bs-target="#transactions">
+                            <i class="fas fa-list me-2"></i> Transacciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#" data-bs-toggle="tab" data-bs-target="#pending">
+                            <i class="fas fa-clock me-2"></i> Pendientes
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
-    </nav>
-    <div class="container mt-4">
-        <h1 class="text-center">Bienvenido al Sistema de Gestión del Gimnasio</h1>
-        <p class="text-center">Administra tu gimnasio de manera eficiente con nuestras herramientas.</p>
-        <button class="btn btn-primary" id="showNotificationBtn">Mostrar Notificación</button>
-    </div>
-    
-    <!-- Notificación -->
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto">Notificación</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="tab-content">
+                <!-- Dashboard -->
+                <div class="tab-pane fade show active" id="dashboard">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1>Dashboard</h1>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTransactionModal">
+                            <i class="fas fa-plus"></i> Nueva Entrada
+                        </button>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="card dashboard-card bg-primary text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total del Mes</h5>
+                                    <h2 class="card-text" id="monthlyTotal">$0.00</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card dashboard-card bg-success text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Ismael debe a Nathanael</h5>
+                                    <h2 class="card-text" id="ismaelDebt">$0.00</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card dashboard-card bg-info text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Nathanael debe a Ismael</h5>
+                                    <h2 class="card-text" id="nathanaelDebt">$0.00</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="recent-transactions">
+                        <h3>Transacciones Recientes</h3>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Receptor</th>
+                                        <th>Tipo</th>
+                                        <th>Monto</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentTransactionsTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div class="tab-pane fade" id="transactions">
+                    <!-- Transactions content -->
+                </div>
+
+                <!-- Pending Tab -->
+                <div class="tab-pane fade" id="pending">
+                    <!-- Pending content -->
+                </div>
             </div>
-            <div class="toast-body">
-                Bienvenido al sistema de gestión del gimnasio.
+        </main>
+    </div>
+</div>
+
+<!-- New Transaction Modal -->
+<div class="modal fade" id="newTransactionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nueva Entrada de Dinero</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="transactionForm">
+                    <div class="mb-3">
+                        <label class="form-label">Receptor</label>
+                        <select class="form-select" name="receiver" required>
+                            <option value="Ismael">Ismael</option>
+                            <option value="Nathanael">Nathanael</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo</label>
+                        <select class="form-select" name="type" required>
+                            <option value="tip">Propina</option>
+                            <option value="commission">Comisión</option>
+                            <option value="sale">Venta</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Monto</label>
+                        <input type="number" class="form-control" name="amount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Moneda</label>
+                        <select class="form-select" name="currency" required>
+                            <option value="USD">USD - Dólar Estadounidense</option>
+                            <option value="DOP">DOP - Peso Dominicano</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="MXN">MXN - Peso Mexicano</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-control" name="observations"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="saveTransaction">Guardar</button>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('showNotificationBtn').addEventListener('click', function() {
-            const toast = new bootstrap.Toast(document.getElementById('liveToast'));
-            toast.show();
-        });
-    </script>
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+let transactions = [];
+
+function addTransaction(transaction) {
+    transaction.id = Date.now();
+    transaction.date = new Date().toISOString();
+    transaction.status = 'pending';
+    transaction.splitAmount = transaction.amount / 2;
+    transactions.push(transaction);
+    updateDashboard();
+    saveToLocalStorage();
+}
+
+function updateDashboard() {
+    // Calculate monthly total
+    const currentMonth = new Date().getMonth();
+    const currencyTotals = {};
+    
+    transactions.forEach(t => {
+        const currency = t.currency || 'USD';
+        if (!currencyTotals[currency]) {
+            currencyTotals[currency] = {
+                monthly: 0,
+                ismaelDebt: 0,
+                nathanaelDebt: 0
+            };
+        }
+        
+        if (new Date(t.date).getMonth() === currentMonth) {
+            currencyTotals[currency].monthly += t.amount;
+        }
+        
+        if (t.status === 'pending') {
+            if (t.receiver === 'Ismael') {
+                currencyTotals[currency].ismaelDebt += t.splitAmount;
+            } else {
+                currencyTotals[currency].nathanaelDebt += t.splitAmount;
+            }
+        }
+    });
+
+    // Update UI with separated currency amounts
+    const monthlyTotalHtml = Object.entries(currencyTotals)
+        .map(([currency, totals]) => `
+            <div class="currency-amount">
+                <span class="currency-label">${currency}:</span> 
+                ${formatCurrency(totals.monthly, currency)}
+            </div>
+        `).join('');
+    
+    const ismaelDebtHtml = Object.entries(currencyTotals)
+        .map(([currency, totals]) => `
+            <div class="currency-amount">
+                <span class="currency-label">${currency}:</span> 
+                ${formatCurrency(totals.ismaelDebt, currency)}
+            </div>
+        `).join('');
+    
+    const nathanaelDebtHtml = Object.entries(currencyTotals)
+        .map(([currency, totals]) => `
+            <div class="currency-amount">
+                <span class="currency-label">${currency}:</span> 
+                ${formatCurrency(totals.nathanaelDebt, currency)}
+            </div>
+        `).join('');
+
+    $('#monthlyTotal').html(monthlyTotalHtml);
+    $('#ismaelDebt').html(ismaelDebtHtml);
+    $('#nathanaelDebt').html(nathanaelDebtHtml);
+
+    // Update recent transactions table
+    const recentHtml = transactions
+        .slice(-5)
+        .reverse()
+        .map(t => `
+            <tr class="${t.status === 'pending' ? 'pending-payment' : 'paid-payment'}">
+                <td>${new Date(t.date).toLocaleDateString()}</td>
+                <td>${t.receiver}</td>
+                <td>${t.type}</td>
+                <td>${formatCurrency(t.amount, t.currency || 'USD')}</td>
+                <td>
+                    <span class="badge ${t.status === 'pending' ? 'bg-warning' : 'bg-success'}">
+                        ${t.status === 'pending' ? 'Pendiente' : 'Pagado'}
+                    </span>
+                </td>
+            </tr>
+        `)
+        .join('');
+    
+    $('#recentTransactionsTable').html(recentHtml);
+}
+
+function saveToLocalStorage() {
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+}
+
+function loadFromLocalStorage() {
+    const saved = localStorage.getItem('transactions');
+    if (saved) {
+        transactions = JSON.parse(saved);
+        updateDashboard();
+    }
+}
+
+function formatCurrency(amount, currency) {
+    const symbols = {
+        'USD': '$',
+        'EUR': '€',
+        'MXN': 'MX$',
+        'DOP': 'RD$'
+    };
+    return `${symbols[currency] || '$'}${amount.toFixed(2)}`;
+}
+
+$(document).ready(function() {
+    loadFromLocalStorage();
+
+    $('#saveTransaction').click(function() {
+        const formData = new FormData(document.getElementById('transactionForm'));
+        const transaction = {
+            receiver: formData.get('receiver'),
+            type: formData.get('type'),
+            amount: parseFloat(formData.get('amount')),
+            currency: formData.get('currency'),
+            observations: formData.get('observations')
+        };
+
+        addTransaction(transaction);
+        $('#newTransactionModal').modal('hide');
+        document.getElementById('transactionForm').reset();
+    });
+});
+</script>
+
 </body>
 </html>
