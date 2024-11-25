@@ -481,9 +481,9 @@ function updateDashboard() {
         if (transaction.status === 'pending') {
             const splitAmount = amount / 2;
             if (transaction.receiver === 'Ismael') {
-                nathanaelDebts[currency] += splitAmount;
-            } else {
                 ismaelDebts[currency] += splitAmount;
+            } else {
+                nathanaelDebts[currency] += splitAmount;
             }
         }
     });
