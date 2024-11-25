@@ -192,7 +192,68 @@
 
                 <!-- Transactions Tab -->
                 <div class="tab-pane fade" id="transactions">
-                    <!-- Transactions content -->
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1>Transacciones</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group me-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="exportTransactions">
+                                    <i class="fas fa-download"></i> Exportar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterReceiver">
+                                <option value="">Todos los Receptores</option>
+                                <option value="Ismael">Ismael</option>
+                                <option value="Nathanael">Nathanael</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterType">
+                                <option value="">Todos los Tipos</option>
+                                <option value="tip">Propina</option>
+                                <option value="commission">Comisión</option>
+                                <option value="sale">Venta</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterStatus">
+                                <option value="">Todos los Estados</option>
+                                <option value="pending">Pendiente</option>
+                                <option value="paid">Pagado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterCurrency">
+                                <option value="">Todas las Monedas</option>
+                                <option value="USD">USD</option>
+                                <option value="DOP">DOP</option>
+                                <option value="EUR">EUR</option>
+                                <option value="MXN">MXN</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha <i class="fas fa-sort"></i></th>
+                                    <th>Receptor <i class="fas fa-sort"></i></th>
+                                    <th>Tipo <i class="fas fa-sort"></i></th>
+                                    <th>Monto <i class="fas fa-sort"></i></th>
+                                    <th>Estado</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsTableBody" data-sort="" data-direction="">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Pending Tab -->
@@ -269,170 +330,96 @@
 let transactions = [];
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
-        authDomain: "ismakun-bf0fa.firebaseapp.com",
-        databaseURL: "https://ismakun-bf0fa-default-rtdb.firebaseio.com",
-        projectId: "ismakun-bf0fa",
-        storageBucket: "ismakun-bf0fa.firebasestorage.app",
-        messagingSenderId: "1028877703945",
-        appId: "1:1028877703945:web:331de48acbcdf2234a51d8"
-    };
+    // Initialize Firebase with error handling
+    try {
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
+            authDomain: "ismakun-bf0fa.firebaseapp.com",
+            databaseURL: "https://ismakun-bf0fa-default-rtdb.firebaseio.com",
+            projectId: "ismakun-bf0fa",
+            storageBucket: "ismakun-bf0fa.firebasestorage.app",
+            messagingSenderId: "1028877703945",
+            appId: "1:1028877703945:web:331de48acbcdf2234a51d8"
+        };
 
-    // Initialize Firebase
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+        // Check if Firebase is already initialized
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        // Get database reference
+        const database = firebase.database();
+        window.database = database; // Make database accessible globally
+
+        // Add error event listener to window
+        window.addEventListener('error', function(e) {
+            console.error('Global error handler:', e.error);
+            // Show user-friendly error message
+            alert('An error occurred. Please refresh the page and try again.');
+        });
+
+        // Initialize the app components
+        setupRealtimeListener();
+        
+        // Add tab change listeners
+        document.querySelector('a[data-bs-target="#transactions"]').addEventListener('click', updateTransactionsTab);
+        document.querySelector('a[data-bs-target="#pending"]').addEventListener('click', updatePendingTab);
+        
+        // Add filter event listeners
+        ['filterReceiver', 'filterType', 'filterStatus', 'filterCurrency'].forEach(filterId => {
+            const element = document.getElementById(filterId);
+            if (element) {
+                element.addEventListener('change', updateTransactionsTab);
+            }
+        });
+        
+        // Add export button listener
+        const exportButton = document.getElementById('exportTransactions');
+        if (exportButton) {
+            exportButton.addEventListener('click', exportTransactions);
+        }
+
+    } catch (error) {
+        console.error('Firebase initialization error:', error);
+        alert('Error initializing the application. Please check your internet connection and try again.');
     }
-    const database = firebase.database();
-    window.database = database; // Make database accessible globally
-
-    // Initial load of transactions
-    setupRealtimeListener();
 });
 
+// Add this helper function for Firebase error handling
 function handleFirebaseError(error) {
     console.error('Firebase Error:', error);
     alert('Error connecting to database. Please check your connection and try again.');
 }
 
+// Update the setupRealtimeListener function with error handling
 function setupRealtimeListener() {
     try {
-        database.ref('transactions').on('value', (snapshot) => {
-            transactions = [];
-            snapshot.forEach((childSnapshot) => {
-                transactions.push({
-                    ...childSnapshot.val(),
-                    key: childSnapshot.key
-                });
-            });
-            updateDashboard();
-        }, handleFirebaseError);
+        database.ref('transactions').on('value', 
+            (snapshot) => {
+                try {
+                    transactions = [];
+                    snapshot.forEach((childSnapshot) => {
+                        transactions.push({
+                            ...childSnapshot.val(),
+                            key: childSnapshot.key
+                        });
+                    });
+                    updateDashboard();
+                    updateTransactionsTab();
+                    updatePendingTab();
+                } catch (error) {
+                    console.error('Error processing transaction data:', error);
+                }
+            },
+            (error) => {
+                handleFirebaseError(error);
+            }
+        );
     } catch (error) {
         handleFirebaseError(error);
     }
 }
-
-function updateDashboard() {
-    if (!transactions) return;
-
-    let monthlyTotalUSD = 0;
-    let monthlyTotalDOP = 0;
-    let ismaelDebtUSD = 0;
-    let nathanaelDebtUSD = 0;
-    let ismaelDebtDOP = 0;
-    let nathanaelDebtDOP = 0;
-
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-
-    transactions.forEach(transaction => {
-        const transactionDate = new Date(transaction.date);
-        // Only count transactions from current month
-        if (transactionDate.getMonth() === currentMonth && 
-            transactionDate.getFullYear() === currentYear) {
-            
-            const amount = parseFloat(transaction.amount);
-            const splitAmount = amount / 2;
-
-            if (transaction.currency === 'USD') {
-                monthlyTotalUSD += amount;
-                if (transaction.receiver === 'Ismael') {
-                    ismaelDebtUSD += splitAmount;
-                } else {
-                    nathanaelDebtUSD += splitAmount;
-                }
-            } else if (transaction.currency === 'DOP') {
-                monthlyTotalDOP += amount;
-                if (transaction.receiver === 'Ismael') {
-                    ismaelDebtDOP += splitAmount;
-                } else {
-                    nathanaelDebtDOP += splitAmount;
-                }
-            }
-        }
-    });
-
-    // Update dashboard cards
-    document.getElementById('monthlyTotal').innerHTML = 
-        `<span class="currency-amount">$${monthlyTotalUSD.toFixed(2)} USD</span>
-         <span class="currency-amount">RD$${monthlyTotalDOP.toFixed(2)} DOP</span>`;
-    
-    document.getElementById('ismaelDebt').innerHTML = 
-        `<span class="currency-amount">$${ismaelDebtUSD.toFixed(2)} USD</span>
-         <span class="currency-amount">RD$${ismaelDebtDOP.toFixed(2)} DOP</span>`;
-    
-    document.getElementById('nathanaelDebt').innerHTML = 
-        `<span class="currency-amount">$${nathanaelDebtUSD.toFixed(2)} USD</span>
-         <span class="currency-amount">RD$${nathanaelDebtDOP.toFixed(2)} DOP</span>`;
-
-    // Update recent transactions table
-    const recentTransactionsTable = document.getElementById('recentTransactionsTable');
-    recentTransactionsTable.innerHTML = '';
-
-    // Sort transactions by date (most recent first)
-    const sortedTransactions = [...transactions].sort((a, b) => 
-        new Date(b.date) - new Date(a.date)
-    );
-
-    // Show only the 5 most recent transactions
-    sortedTransactions.slice(0, 5).forEach(transaction => {
-        const row = document.createElement('tr');
-        const date = new Date(transaction.date).toLocaleDateString();
-        row.innerHTML = `
-            <td>${date}</td>
-            <td>${transaction.receiver}</td>
-            <td>${transaction.type}</td>
-            <td>${transaction.currency} ${transaction.amount.toFixed(2)}</td>
-            <td>
-                <span class="badge ${transaction.status === 'pending' ? 'bg-warning' : 'bg-success'}">
-                    ${transaction.status === 'pending' ? 'Pendiente' : 'Pagado'}
-                </span>
-            </td>
-        `;
-        recentTransactionsTable.appendChild(row);
-    });
-}
-
-function addTransaction(transaction) {
-    const loadingIndicator = document.getElementById('loadingIndicator');
-    loadingIndicator.style.display = 'block';
-    
-    transaction.id = Date.now();
-    transaction.date = new Date().toISOString();
-    transaction.status = 'pending';
-    transaction.splitAmount = transaction.amount / 2;
-    
-    // Save to Firebase
-    database.ref('transactions').push(transaction)
-        .then(() => {
-            console.log('Transaction saved successfully');
-            loadingIndicator.style.display = 'none';
-        })
-        .catch((error) => {
-            console.error('Error saving transaction:', error);
-            loadingIndicator.style.display = 'none';
-            alert('Error saving transaction. Please try again.');
-        });
-}
-
-$(document).ready(function() {
-    $('#saveTransaction').click(function() {
-        const formData = new FormData(document.getElementById('transactionForm'));
-        const transaction = {
-            receiver: formData.get('receiver'),
-            type: formData.get('type'),
-            amount: parseFloat(formData.get('amount')),
-            currency: formData.get('currency'),
-            observations: formData.get('observations')
-        };
-
-        addTransaction(transaction);
-        $('#newTransactionModal').modal('hide');
-        document.getElementById('transactionForm').reset();
-    });
-});
 </script>
 
 </body>
