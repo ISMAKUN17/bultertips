@@ -87,9 +87,24 @@
     padding: 0.5rem 1.5rem;
     font-weight: 600;
 }
+
+#loadingIndicator {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
 </style>
 </head>
 <body class="bg-light">
+
+<div id="loadingIndicator">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 
 <div class="container-fluid">
     <div class="row">
@@ -246,123 +261,163 @@
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<!-- Updated Firebase SDK scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+
 <script>
 let transactions = [];
 
-function addTransaction(transaction) {
-    transaction.id = Date.now();
-    transaction.date = new Date().toISOString();
-    transaction.status = 'pending';
-    transaction.splitAmount = transaction.amount / 2;
-    transactions.push(transaction);
-    updateDashboard();
-    saveToLocalStorage();
+document.addEventListener('DOMContentLoaded', function() {
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
+        authDomain: "ismakun-bf0fa.firebaseapp.com",
+        databaseURL: "https://ismakun-bf0fa-default-rtdb.firebaseio.com",
+        projectId: "ismakun-bf0fa",
+        storageBucket: "ismakun-bf0fa.firebasestorage.app",
+        messagingSenderId: "1028877703945",
+        appId: "1:1028877703945:web:331de48acbcdf2234a51d8"
+    };
+
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const database = firebase.database();
+    window.database = database; // Make database accessible globally
+
+    // Initial load of transactions
+    setupRealtimeListener();
+});
+
+function handleFirebaseError(error) {
+    console.error('Firebase Error:', error);
+    alert('Error connecting to database. Please check your connection and try again.');
+}
+
+function setupRealtimeListener() {
+    try {
+        database.ref('transactions').on('value', (snapshot) => {
+            transactions = [];
+            snapshot.forEach((childSnapshot) => {
+                transactions.push({
+                    ...childSnapshot.val(),
+                    key: childSnapshot.key
+                });
+            });
+            updateDashboard();
+        }, handleFirebaseError);
+    } catch (error) {
+        handleFirebaseError(error);
+    }
 }
 
 function updateDashboard() {
-    // Calculate monthly total
-    const currentMonth = new Date().getMonth();
-    const currencyTotals = {};
-    
-    transactions.forEach(t => {
-        const currency = t.currency || 'USD';
-        if (!currencyTotals[currency]) {
-            currencyTotals[currency] = {
-                monthly: 0,
-                ismaelDebt: 0,
-                nathanaelDebt: 0
-            };
-        }
-        
-        if (new Date(t.date).getMonth() === currentMonth) {
-            currencyTotals[currency].monthly += t.amount;
-        }
-        
-        if (t.status === 'pending') {
-            if (t.receiver === 'Ismael') {
-                currencyTotals[currency].ismaelDebt += t.splitAmount;
-            } else {
-                currencyTotals[currency].nathanaelDebt += t.splitAmount;
+    if (!transactions) return;
+
+    let monthlyTotalUSD = 0;
+    let monthlyTotalDOP = 0;
+    let ismaelDebtUSD = 0;
+    let nathanaelDebtUSD = 0;
+    let ismaelDebtDOP = 0;
+    let nathanaelDebtDOP = 0;
+
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
+    transactions.forEach(transaction => {
+        const transactionDate = new Date(transaction.date);
+        // Only count transactions from current month
+        if (transactionDate.getMonth() === currentMonth && 
+            transactionDate.getFullYear() === currentYear) {
+            
+            const amount = parseFloat(transaction.amount);
+            const splitAmount = amount / 2;
+
+            if (transaction.currency === 'USD') {
+                monthlyTotalUSD += amount;
+                if (transaction.receiver === 'Ismael') {
+                    ismaelDebtUSD += splitAmount;
+                } else {
+                    nathanaelDebtUSD += splitAmount;
+                }
+            } else if (transaction.currency === 'DOP') {
+                monthlyTotalDOP += amount;
+                if (transaction.receiver === 'Ismael') {
+                    ismaelDebtDOP += splitAmount;
+                } else {
+                    nathanaelDebtDOP += splitAmount;
+                }
             }
         }
     });
 
-    // Update UI with separated currency amounts
-    const monthlyTotalHtml = Object.entries(currencyTotals)
-        .map(([currency, totals]) => `
-            <div class="currency-amount">
-                <span class="currency-label">${currency}:</span> 
-                ${formatCurrency(totals.monthly, currency)}
-            </div>
-        `).join('');
+    // Update dashboard cards
+    document.getElementById('monthlyTotal').innerHTML = 
+        `<span class="currency-amount">$${monthlyTotalUSD.toFixed(2)} USD</span>
+         <span class="currency-amount">RD$${monthlyTotalDOP.toFixed(2)} DOP</span>`;
     
-    const ismaelDebtHtml = Object.entries(currencyTotals)
-        .map(([currency, totals]) => `
-            <div class="currency-amount">
-                <span class="currency-label">${currency}:</span> 
-                ${formatCurrency(totals.ismaelDebt, currency)}
-            </div>
-        `).join('');
+    document.getElementById('ismaelDebt').innerHTML = 
+        `<span class="currency-amount">$${ismaelDebtUSD.toFixed(2)} USD</span>
+         <span class="currency-amount">RD$${ismaelDebtDOP.toFixed(2)} DOP</span>`;
     
-    const nathanaelDebtHtml = Object.entries(currencyTotals)
-        .map(([currency, totals]) => `
-            <div class="currency-amount">
-                <span class="currency-label">${currency}:</span> 
-                ${formatCurrency(totals.nathanaelDebt, currency)}
-            </div>
-        `).join('');
-
-    $('#monthlyTotal').html(monthlyTotalHtml);
-    $('#ismaelDebt').html(ismaelDebtHtml);
-    $('#nathanaelDebt').html(nathanaelDebtHtml);
+    document.getElementById('nathanaelDebt').innerHTML = 
+        `<span class="currency-amount">$${nathanaelDebtUSD.toFixed(2)} USD</span>
+         <span class="currency-amount">RD$${nathanaelDebtDOP.toFixed(2)} DOP</span>`;
 
     // Update recent transactions table
-    const recentHtml = transactions
-        .slice(-5)
-        .reverse()
-        .map(t => `
-            <tr class="${t.status === 'pending' ? 'pending-payment' : 'paid-payment'}">
-                <td>${new Date(t.date).toLocaleDateString()}</td>
-                <td>${t.receiver}</td>
-                <td>${t.type}</td>
-                <td>${formatCurrency(t.amount, t.currency || 'USD')}</td>
-                <td>
-                    <span class="badge ${t.status === 'pending' ? 'bg-warning' : 'bg-success'}">
-                        ${t.status === 'pending' ? 'Pendiente' : 'Pagado'}
-                    </span>
-                </td>
-            </tr>
-        `)
-        .join('');
+    const recentTransactionsTable = document.getElementById('recentTransactionsTable');
+    recentTransactionsTable.innerHTML = '';
+
+    // Sort transactions by date (most recent first)
+    const sortedTransactions = [...transactions].sort((a, b) => 
+        new Date(b.date) - new Date(a.date)
+    );
+
+    // Show only the 5 most recent transactions
+    sortedTransactions.slice(0, 5).forEach(transaction => {
+        const row = document.createElement('tr');
+        const date = new Date(transaction.date).toLocaleDateString();
+        row.innerHTML = `
+            <td>${date}</td>
+            <td>${transaction.receiver}</td>
+            <td>${transaction.type}</td>
+            <td>${transaction.currency} ${transaction.amount.toFixed(2)}</td>
+            <td>
+                <span class="badge ${transaction.status === 'pending' ? 'bg-warning' : 'bg-success'}">
+                    ${transaction.status === 'pending' ? 'Pendiente' : 'Pagado'}
+                </span>
+            </td>
+        `;
+        recentTransactionsTable.appendChild(row);
+    });
+}
+
+function addTransaction(transaction) {
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    loadingIndicator.style.display = 'block';
     
-    $('#recentTransactionsTable').html(recentHtml);
-}
-
-function saveToLocalStorage() {
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-}
-
-function loadFromLocalStorage() {
-    const saved = localStorage.getItem('transactions');
-    if (saved) {
-        transactions = JSON.parse(saved);
-        updateDashboard();
-    }
-}
-
-function formatCurrency(amount, currency) {
-    const symbols = {
-        'USD': '$',
-        'EUR': '€',
-        'MXN': 'MX$',
-        'DOP': 'RD$'
-    };
-    return `${symbols[currency] || '$'}${amount.toFixed(2)}`;
+    transaction.id = Date.now();
+    transaction.date = new Date().toISOString();
+    transaction.status = 'pending';
+    transaction.splitAmount = transaction.amount / 2;
+    
+    // Save to Firebase
+    database.ref('transactions').push(transaction)
+        .then(() => {
+            console.log('Transaction saved successfully');
+            loadingIndicator.style.display = 'none';
+        })
+        .catch((error) => {
+            console.error('Error saving transaction:', error);
+            loadingIndicator.style.display = 'none';
+            alert('Error saving transaction. Please try again.');
+        });
 }
 
 $(document).ready(function() {
-    loadFromLocalStorage();
-
     $('#saveTransaction').click(function() {
         const formData = new FormData(document.getElementById('transactionForm'));
         const transaction = {
