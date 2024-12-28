@@ -148,7 +148,7 @@
                             <div class="card dashboard-card bg-primary text-white">
                                 <div class="card-body">
                                     <h5 class="card-title">Total del Mes</h5>
-                                    <h2 class="card-text" id="monthlyTotal">$0.00</h2>
+                                    <h2 class="card-text" id="monthlyTotal">&#x24;0.00</h2>
                                 </div>
                             </div>
                         </div>
@@ -156,7 +156,7 @@
                             <div class="card dashboard-card bg-success text-white">
                                 <div class="card-body">
                                     <h5 class="card-title">Ismael debe a Nathanael</h5>
-                                    <h2 class="card-text" id="ismaelDebt">$0.00</h2>
+                                    <h2 class="card-text" id="ismaelDebt">&#x24;0.00</h2>
                                 </div>
                             </div>
                         </div>
@@ -164,7 +164,7 @@
                             <div class="card dashboard-card bg-info text-white">
                                 <div class="card-body">
                                     <h5 class="card-title">Nathanael debe a Ismael</h5>
-                                    <h2 class="card-text" id="nathanaelDebt">$0.00</h2>
+                                    <h2 class="card-text" id="nathanaelDebt">&#x24;0.00</h2>
                                 </div>
                             </div>
                         </div>
@@ -211,7 +211,7 @@
                                     <div class="card-header bg-primary text-white">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">USD Dashboard</h5>
-                                            <button class="btn btn-sm btn-light" onclick="setGoal('USD')">
+                                            <button class="btn btn-sm btn-light" onclick="setGoal(&apos;USD&apos;)">
                                                 <i class="fas fa-flag"></i> Set Goal
                                             </button>
                                         </div>
@@ -222,8 +222,8 @@
                                             <div id="usdProgress" class="progress-bar" role="progressbar"></div>
                                         </div>
                                         <div class="d-flex justify-content-between mt-2">
-                                            <small>Current: $<span id="usdCurrent">0</span></small>
-                                            <small>Goal: $<span id="usdGoal">0</span></small>
+                                            <small>Current: &#x24;<span id="usdCurrent">0</span></small>
+                                            <small>Goal: &#x24;<span id="usdGoal">0</span></small>
                                         </div>
                                     </div>
                                 </div>
@@ -235,7 +235,7 @@
                                     <div class="card-header bg-success text-white">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">DOP Dashboard</h5>
-                                            <button class="btn btn-sm btn-light" onclick="setGoal('DOP')">
+                                            <button class="btn btn-sm btn-light" onclick="setGoal(&apos;DOP&apos;)">
                                                 <i class="fas fa-flag"></i> Set Goal
                                             </button>
                                         </div>
@@ -246,8 +246,8 @@
                                             <div id="dopProgress" class="progress-bar bg-success" role="progressbar"></div>
                                         </div>
                                         <div class="d-flex justify-content-between mt-2">
-                                            <small>Current: RD$<span id="dopCurrent">0</span></small>
-                                            <small>Goal: RD$<span id="dopGoal">0</span></small>
+                                            <small>Current: RD&#x24;<span id="dopCurrent">0</span></small>
+                                            <small>Goal: RD&#x24;<span id="dopGoal">0</span></small>
                                         </div>
                                     </div>
                                 </div>
@@ -259,7 +259,7 @@
                                     <div class="card-header bg-info text-white">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">EUR Dashboard</h5>
-                                            <button class="btn btn-sm btn-light" onclick="setGoal('EUR')">
+                                            <button class="btn btn-sm btn-light" onclick="setGoal(&apos;EUR&apos;)">
                                                 <i class="fas fa-flag"></i> Set Goal
                                             </button>
                                         </div>
@@ -270,8 +270,8 @@
                                             <div id="eurProgress" class="progress-bar bg-info" role="progressbar"></div>
                                         </div>
                                         <div class="d-flex justify-content-between mt-2">
-                                            <small>Current: €<span id="eurCurrent">0</span></small>
-                                            <small>Goal: €<span id="eurGoal">0</span></small>
+                                            <small>Current: &#x20ac;<span id="eurCurrent">0</span></small>
+                                            <small>Goal: &#x20ac;<span id="eurGoal">0</span></small>
                                         </div>
                                     </div>
                                 </div>
@@ -283,7 +283,7 @@
                                     <div class="card-header bg-warning text-dark">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">MXN Dashboard</h5>
-                                            <button class="btn btn-sm btn-light" onclick="setGoal('MXN')">
+                                            <button class="btn btn-sm btn-light" onclick="setGoal(&apos;MXN&apos;)">
                                                 <i class="fas fa-flag"></i> Set Goal
                                             </button>
                                         </div>
@@ -294,8 +294,8 @@
                                             <div id="mxnProgress" class="progress-bar bg-warning" role="progressbar"></div>
                                         </div>
                                         <div class="d-flex justify-content-between mt-2">
-                                            <small>Current: MX$<span id="mxnCurrent">0</span></small>
-                                            <small>Goal: MX$<span id="mxnGoal">0</span></small>
+                                            <small>Current: MX&#x24;<span id="mxnCurrent">0</span></small>
+                                            <small>Goal: MX&#x24;<span id="mxnGoal">0</span></small>
                                         </div>
                                     </div>
                                 </div>
@@ -320,29 +320,29 @@
                     <div class="row mb-3">
                         <div class="col-md-3">
                             <select class="form-select" id="filterReceiver">
-                                <option value="">Todos los Receptores</option>
+                                <option value>Todos los Receptores</option>
                                 <option value="Ismael">Ismael</option>
                                 <option value="Nathanael">Nathanael</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <select class="form-select" id="filterType">
-                                <option value="">Todos los Tipos</option>
+                                <option value>Todos los Tipos</option>
                                 <option value="tip">Propina</option>
-                                <option value="commission">Comisión</option>
+                                <option value="commission">Comisi&#xf3;n</option>
                                 <option value="sale">Venta</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <select class="form-select" id="filterStatus">
-                                <option value="">Todos los Estados</option>
+                                <option value>Todos los Estados</option>
                                 <option value="pending">Pendiente</option>
                                 <option value="paid">Pagado</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <select class="form-select" id="filterCurrency">
-                                <option value="">Todas las Monedas</option>
+                                <option value>Todas las Monedas</option>
                                 <option value="USD">USD</option>
                                 <option value="DOP">DOP</option>
                                 <option value="EUR">EUR</option>
@@ -364,7 +364,7 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="transactionsTableBody" data-sort="" data-direction="">
+                            <tbody id="transactionsTableBody" data-sort data-direction>
                             </tbody>
                         </table>
                     </div>
@@ -420,7 +420,7 @@
                         <label class="form-label">Tipo</label>
                         <select class="form-select" name="type" required>
                             <option value="tip">Propina</option>
-                            <option value="commission">Comisión</option>
+                            <option value="commission">Comisi&#xf3;n</option>
                             <option value="sale">Venta</option>
                         </select>
                     </div>
@@ -431,7 +431,7 @@
                     <div class="mb-3">
                         <label class="form-label">Moneda</label>
                         <select class="form-select" name="currency" required>
-                            <option value="USD">USD - Dólar Estadounidense</option>
+                            <option value="USD">USD - D&#xf3;lar Estadounidense</option>
                             <option value="DOP">DOP - Peso Dominicano</option>
                             <option value="EUR">EUR - Euro</option>
                             <option value="MXN">MXN - Peso Mexicano</option>
@@ -476,6 +476,28 @@
     </div>
 </div>
 
+<!-- Chart Details Modal -->
+<div class="modal fade" id="chartDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Detalles del Per&#xed;odo
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="chartDetailContent" class="p-3">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <!-- jQuery -->
@@ -488,191 +510,137 @@
 <!-- Add Chart.js before the closing </body> tag -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-let transactions = [];
+<script>let transactions = [];
 let yearlyChart = null;
 let currencyCharts = {};
 let goals = {};
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Initializing application...');
-    
-    // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
-        authDomain: "ismakun-bf0fa.firebaseapp.com",
-        databaseURL: "https://ismakun-bf0fa-default-rtdb.firebaseio.com",
-        projectId: "ismakun-bf0fa",
-        storageBucket: "ismakun-bf0fa.firebasestorage.app",
-        messagingSenderId: "1028877703945",
-        appId: "1:1028877703945:web:331de48acbcdf2234a51d8"
-    };
-
-    // Initialize Firebase
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+document.addEventListener('DOMContentLoaded', function () {
+  console.log('Initializing application...');
+  const firebaseConfig = {
+    apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
+    authDomain: "ismakun-bf0fa.firebaseapp.com",
+    databaseURL: "https://ismakun-bf0fa-default-rtdb.firebaseio.com",
+    projectId: "ismakun-bf0fa",
+    storageBucket: "ismakun-bf0fa.firebasestorage.app",
+    messagingSenderId: "1028877703945",
+    appId: "1:1028877703945:web:331de48acbcdf2234a51d8"
+  };
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const database = firebase.database();
+  window.database = database;
+  database.ref('.info/connected').on('value', function (snap) {
+    if (snap.val() === true) {
+      console.log('Connected to Firebase');
+    } else {
+      console.log('Disconnected from Firebase');
     }
-    const database = firebase.database();
-    window.database = database; // Make database accessible globally
-
-    // Add error handlers to Firebase operations
-    database.ref('.info/connected').on('value', function(snap) {
-        if (snap.val() === true) {
-            console.log('Connected to Firebase');
-        } else {
-            console.log('Disconnected from Firebase');
-        }
-    });
-
-    // Test database connection
-    database.ref('transactions').once('value')
-        .then(snapshot => {
-            console.log('Initial data load successful');
-        })
-        .catch(error => {
-            console.error('Error in initial data load:', error);
-        });
-
-    // Initial load of transactions
-    setupRealtimeListener();
-    document.querySelector('a[data-bs-target="#transactions"]').addEventListener('click', updateTransactionsTab);
-    document.querySelector('a[data-bs-target="#pending"]').addEventListener('click', updatePendingTab);
-
-    // Add filter event listeners
-    ['filterReceiver', 'filterType', 'filterStatus', 'filterCurrency'].forEach(filterId => {
-        document.getElementById(filterId).addEventListener('change', updateTransactionsTab);
-    });
-    
-    // Add export button listener
-    document.getElementById('exportTransactions').addEventListener('click', exportTransactions);
-    
-    // Add save transaction handler
-    document.getElementById('saveTransaction').addEventListener('click', saveNewTransaction);
-    
-    document.getElementById('yearSelector').addEventListener('change', updateYearlyChart);
-    
-    initializeCurrencyDashboards();
+  });
+  database.ref('transactions').once('value').then(snapshot => {
+    console.log('Initial data load successful');
+  }).catch(error => {
+    console.error('Error in initial data load:', error);
+  });
+  setupRealtimeListener();
+  document.querySelector('a[data-bs-target="#transactions"]').addEventListener('click', updateTransactionsTab);
+  document.querySelector('a[data-bs-target="#pending"]').addEventListener('click', updatePendingTab);
+  ['filterReceiver', 'filterType', 'filterStatus', 'filterCurrency'].forEach(filterId => {
+    document.getElementById(filterId).addEventListener('change', updateTransactionsTab);
+  });
+  document.getElementById('exportTransactions').addEventListener('click', exportTransactions);
+  document.getElementById('saveTransaction').addEventListener('click', saveNewTransaction);
+  document.getElementById('yearSelector').addEventListener('change', updateYearlyChart);
+  initializeCurrencyDashboards();
 });
-
 function setupRealtimeListener() {
-    try {
-        const transactionsRef = database.ref('transactions');
-        
-        // Listen for data changes
-        transactionsRef.on('value', (snapshot) => {
-            console.log('Data received from Firebase:', snapshot.val());
-            transactions = [];
-            
-            snapshot.forEach((childSnapshot) => {
-                const transaction = {
-                    ...childSnapshot.val(),
-                    key: childSnapshot.key
-                };
-                transactions.push(transaction);
-            });
-            
-            console.log('Processed transactions:', transactions);
-            
-            // Update all views
-            updateDashboard();
-            updateTransactionsTab();
-            updatePendingTab();
-            updateCurrencyCharts();
-        }, (error) => {
-            console.error('Error fetching data:', error);
-            alert('Error al cargar los datos. Por favor, recarga la página.');
-        });
-    } catch (error) {
-        console.error('Setup error:', error);
-        alert('Error al configurar la conexión con la base de datos.');
-    }
-}
-
-function updateDashboard() {
-    // Calculate monthly totals per currency
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    
-    const monthlyTotals = {
-        USD: 0,
-        DOP: 0,
-        EUR: 0,
-        MXN: 0
-    };
-
-    // Calculate debts per currency
-    const ismaelDebts = {
-        USD: 0,
-        DOP: 0,
-        EUR: 0,
-        MXN: 0
-    };
-
-    const nathanaelDebts = {
-        USD: 0,
-        DOP: 0,
-        EUR: 0,
-        MXN: 0
-    };
-
-    transactions.forEach(transaction => {
-        const transactionDate = new Date(transaction.date);
-        const amount = parseFloat(transaction.amount);
-        const currency = transaction.currency;
-        
-        // Calculate monthly totals
-        if (transactionDate.getMonth() === currentMonth && 
-            transactionDate.getFullYear() === currentYear) {
-            monthlyTotals[currency] += amount;
-        }
-
-        // Calculate pending debts
-        if (transaction.status === 'pending') {
-            const splitAmount = amount / 2;
-            if (transaction.receiver === 'Ismael') {
-                ismaelDebts[currency] += splitAmount;
-            } else {
-                nathanaelDebts[currency] += splitAmount;
-            }
-        }
+  try {
+    const transactionsRef = database.ref('transactions');
+    transactionsRef.on('value', snapshot => {
+      console.log('Data received from Firebase:', snapshot.val());
+      transactions = [];
+      snapshot.forEach(childSnapshot => {
+        const transaction = {
+          ...childSnapshot.val(),
+          key: childSnapshot.key
+        };
+        transactions.push(transaction);
+      });
+      console.log('Processed transactions:', transactions);
+      updateDashboard();
+      updateTransactionsTab();
+      updatePendingTab();
+      updateCurrencyCharts();
+    }, error => {
+      console.error('Error fetching data:', error);
+      alert('Error al cargar los datos. Por favor, recarga la página.');
     });
-
-    // Update UI
-    updateTotalsDisplay('monthlyTotal', monthlyTotals);
-    updateTotalsDisplay('ismaelDebt', ismaelDebts);
-    updateTotalsDisplay('nathanaelDebt', nathanaelDebts);
-    updateRecentTransactions();
-    updateYearlyChart();
+  } catch (error) {
+    console.error('Setup error:', error);
+    alert('Error al configurar la conexión con la base de datos.');
+  }
 }
-
+function updateDashboard() {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  const monthlyTotals = {
+    USD: 0,
+    DOP: 0,
+    EUR: 0,
+    MXN: 0
+  };
+  const ismaelDebts = {
+    USD: 0,
+    DOP: 0,
+    EUR: 0,
+    MXN: 0
+  };
+  const nathanaelDebts = {
+    USD: 0,
+    DOP: 0,
+    EUR: 0,
+    MXN: 0
+  };
+  transactions.forEach(transaction => {
+    const transactionDate = new Date(transaction.date);
+    const amount = parseFloat(transaction.amount);
+    const currency = transaction.currency;
+    if (transactionDate.getMonth() === currentMonth && transactionDate.getFullYear() === currentYear) {
+      monthlyTotals[currency] += amount;
+    }
+    if (transaction.status === 'pending') {
+      const splitAmount = amount / 2;
+      if (transaction.receiver === 'Ismael') {
+        ismaelDebts[currency] += splitAmount;
+      } else {
+        nathanaelDebts[currency] += splitAmount;
+      }
+    }
+  });
+  updateTotalsDisplay('monthlyTotal', monthlyTotals);
+  updateTotalsDisplay('ismaelDebt', ismaelDebts);
+  updateTotalsDisplay('nathanaelDebt', nathanaelDebts);
+  updateRecentTransactions();
+  updateYearlyChart();
+}
 function updateTotalsDisplay(elementId, totals) {
-    const element = document.getElementById(elementId);
-    const html = Object.entries(totals)
-        .filter(([_, amount]) => amount > 0)
-        .map(([currency, amount]) => `
+  const element = document.getElementById(elementId);
+  const html = Object.entries(totals).filter(([_, amount]) => amount > 0).map(([currency, amount]) => `
             <div class="currency-amount">
                 ${formatCurrency(amount, currency)}
             </div>
         `).join('');
-    
-    element.innerHTML = html || '$0.00';
+  element.innerHTML = html || '$0.00';
 }
-
 function updateRecentTransactions() {
-    const recentTransactionsTable = document.getElementById('recentTransactionsTable');
-    const recentTransactions = [...transactions]
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .slice(0, 5);
-
-    recentTransactionsTable.innerHTML = recentTransactions.map(transaction => `
+  const recentTransactionsTable = document.getElementById('recentTransactionsTable');
+  const recentTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+  recentTransactionsTable.innerHTML = recentTransactions.map(transaction => `
         <tr>
             <td>${new Date(transaction.date).toLocaleDateString()}</td>
             <td>${transaction.receiver}</td>
-            <td><span class="badge bg-info">${
-                transaction.type === 'tip' ? 'Propina' : 
-                transaction.type === 'commission' ? 'Comisión' : 'Venta'
-            }</span></td>
+            <td><span class="badge bg-info">${transaction.type === 'tip' ? 'Propina' : transaction.type === 'commission' ? 'Comisión' : 'Venta'}</span></td>
             <td class="text-end">
                 <span class="currency-symbol">${transaction.currency}</span> 
                 ${parseFloat(transaction.amount).toFixed(2)}
@@ -692,86 +660,65 @@ function updateRecentTransactions() {
         </tr>
     `;
 }
-
 function saveNewTransaction() {
-    const form = document.getElementById('transactionForm');
-    const formData = new FormData(form);
-    
-    const newTransaction = {
-        receiver: formData.get('receiver'),
-        type: formData.get('type'),
-        amount: parseFloat(formData.get('amount')),
-        currency: formData.get('currency'),
-        observations: formData.get('observations') || '',
-        date: new Date().toISOString(),
-        status: 'pending'
-    };
-
-    // Validate data before saving
-    if (!newTransaction.amount || isNaN(newTransaction.amount)) {
-        alert('Por favor ingrese un monto válido');
-        return;
-    }
-
-    // Show loading indicator
-    document.getElementById('loadingIndicator').style.display = 'block';
-
-    // Save to Firebase
-    database.ref('transactions').push(newTransaction)
-        .then(() => {
-            const modal = bootstrap.Modal.getInstance(document.getElementById('newTransactionModal'));
-            modal.hide();
-            form.reset();
-            alert('Transacción guardada exitosamente');
-        })
-        .catch(error => {
-            console.error('Error saving transaction:', error);
-            alert('Error al guardar la transacción: ' + error.message);
-        })
-        .finally(() => {
-            document.getElementById('loadingIndicator').style.display = 'none';
-        });
+  const form = document.getElementById('transactionForm');
+  const formData = new FormData(form);
+  const newTransaction = {
+    receiver: formData.get('receiver'),
+    type: formData.get('type'),
+    amount: parseFloat(formData.get('amount')),
+    currency: formData.get('currency'),
+    observations: formData.get('observations') || '',
+    date: new Date().toISOString(),
+    status: 'pending'
+  };
+  if (!newTransaction.amount || isNaN(newTransaction.amount)) {
+    alert('Por favor ingrese un monto válido');
+    return;
+  }
+  document.getElementById('loadingIndicator').style.display = 'block';
+  database.ref('transactions').push(newTransaction).then(() => {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('newTransactionModal'));
+    modal.hide();
+    form.reset();
+    alert('Transacción guardada exitosamente');
+  }).catch(error => {
+    console.error('Error saving transaction:', error);
+    alert('Error al guardar la transacción: ' + error.message);
+  }).finally(() => {
+    document.getElementById('loadingIndicator').style.display = 'none';
+  });
 }
-
 function updateTransactionsTab() {
-    const transactionsTableBody = document.getElementById('transactionsTableBody');
-    transactionsTableBody.innerHTML = '';
-
-    let filteredTransactions = [...transactions];
-    
-    // Apply filters
-    const filterReceiver = document.getElementById('filterReceiver').value;
-    const filterType = document.getElementById('filterType').value;
-    const filterStatus = document.getElementById('filterStatus').value;
-    const filterCurrency = document.getElementById('filterCurrency').value;
-
-    if (filterReceiver) {
-        filteredTransactions = filteredTransactions.filter(t => t.receiver === filterReceiver);
-    }
-    if (filterType) {
-        filteredTransactions = filteredTransactions.filter(t => t.type === filterType);
-    }
-    if (filterStatus) {
-        filteredTransactions = filteredTransactions.filter(t => t.status === filterStatus);
-    }
-    if (filterCurrency) {
-        filteredTransactions = filteredTransactions.filter(t => t.currency === filterCurrency);
-    }
-
-    // Sort transactions by date (most recent first)
-    filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    filteredTransactions.forEach(transaction => {
-        const row = document.createElement('tr');
-        const date = new Date(transaction.date).toLocaleDateString();
-        
-        let typeLabel = {
-            'tip': 'Propina',
-            'commission': 'Comisión',
-            'sale': 'Venta'
-        }[transaction.type] || transaction.type;
-
-        row.innerHTML = `
+  const transactionsTableBody = document.getElementById('transactionsTableBody');
+  transactionsTableBody.innerHTML = '';
+  let filteredTransactions = [...transactions];
+  const filterReceiver = document.getElementById('filterReceiver').value;
+  const filterType = document.getElementById('filterType').value;
+  const filterStatus = document.getElementById('filterStatus').value;
+  const filterCurrency = document.getElementById('filterCurrency').value;
+  if (filterReceiver) {
+    filteredTransactions = filteredTransactions.filter(t => t.receiver === filterReceiver);
+  }
+  if (filterType) {
+    filteredTransactions = filteredTransactions.filter(t => t.type === filterType);
+  }
+  if (filterStatus) {
+    filteredTransactions = filteredTransactions.filter(t => t.status === filterStatus);
+  }
+  if (filterCurrency) {
+    filteredTransactions = filteredTransactions.filter(t => t.currency === filterCurrency);
+  }
+  filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+  filteredTransactions.forEach(transaction => {
+    const row = document.createElement('tr');
+    const date = new Date(transaction.date).toLocaleDateString();
+    let typeLabel = {
+      'tip': 'Propina',
+      'commission': 'Comisión',
+      'sale': 'Venta'
+    }[transaction.type] || transaction.type;
+    row.innerHTML = `
             <td>${date}</td>
             <td>${transaction.receiver}</td>
             <td><span class="badge bg-info">${typeLabel}</span></td>
@@ -800,12 +747,10 @@ function updateTransactionsTab() {
                 </div>
             </td>
         `;
-        transactionsTableBody.appendChild(row);
-    });
-
-    // Add no results message if needed
-    if (filteredTransactions.length === 0) {
-        transactionsTableBody.innerHTML = `
+    transactionsTableBody.appendChild(row);
+  });
+  if (filteredTransactions.length === 0) {
+    transactionsTableBody.innerHTML = `
             <tr>
                 <td colspan="7" class="text-center p-3">
                     <i class="fas fa-search me-2"></i>
@@ -813,14 +758,12 @@ function updateTransactionsTab() {
                 </td>
             </tr>
         `;
-    }
+  }
 }
-
 function updatePendingTab() {
-    const pendingTab = document.getElementById('pending');
-    const pendingTransactions = transactions.filter(t => t.status === 'pending');
-
-    pendingTab.innerHTML = `
+  const pendingTab = document.getElementById('pending');
+  const pendingTransactions = transactions.filter(t => t.status === 'pending');
+  pendingTab.innerHTML = `
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
             <h1>Transacciones Pendientes</h1>
         </div>
@@ -842,10 +785,7 @@ function updatePendingTab() {
                         <tr>
                             <td>${new Date(t.date).toLocaleDateString()}</td>
                             <td>${t.receiver}</td>
-                            <td><span class="badge bg-info">${
-                                t.type === 'tip' ? 'Propina' : 
-                                t.type === 'commission' ? 'Comisión' : 'Venta'
-                            }</span></td>
+                            <td><span class="badge bg-info">${t.type === 'tip' ? 'Propina' : t.type === 'commission' ? 'Comisión' : 'Venta'}</span></td>
                             <td>
                                 <span class="currency-symbol">${t.currency}</span> 
                                 ${parseFloat(t.amount).toFixed(2)}
@@ -872,261 +812,362 @@ function updatePendingTab() {
         </div>
     `;
 }
-
 function formatCurrency(amount, currency) {
-    const formatter = new Intl.NumberFormat('es-DO', {
-        style: 'currency',
-        currency: currency,
-        minimumFractionDigits: 2
-    });
-    return formatter.format(amount);
+  const formatter = new Intl.NumberFormat('es-DO', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 2
+  });
+  return formatter.format(amount);
 }
-
 function editTransaction(key) {
-    const transaction = transactions.find(t => t.key === key);
-    if (!transaction) return;
-
-    // Populate modal with transaction data
-    const form = document.getElementById('transactionForm');
-    form.querySelector('[name="receiver"]').value = transaction.receiver;
-    form.querySelector('[name="type"]').value = transaction.type;
-    form.querySelector('[name="amount"]').value = transaction.amount;
-    form.querySelector('[name="currency"]').value = transaction.currency;
-    form.querySelector('[name="observations"]').value = transaction.observations || '';
-
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('newTransactionModal'));
-    modal.show();
-
-    // Update save button to handle edit
-    document.getElementById('saveTransaction').onclick = function() {
-        const formData = new FormData(form);
-        const updatedTransaction = {
-            ...transaction,
-            receiver: formData.get('receiver'),
-            type: formData.get('type'),
-            amount: parseFloat(formData.get('amount')),
-            currency: formData.get('currency'),
-            observations: formData.get('observations')
-        };
-
-        database.ref(`transactions/${key}`).update(updatedTransaction)
-            .then(() => {
-                modal.hide();
-                form.reset();
-            })
-            .catch(error => {
-                console.error('Error updating transaction:', error);
-                alert('Error updating transaction. Please try again.');
-            });
+  const transaction = transactions.find(t => t.key === key);
+  if (!transaction) return;
+  const form = document.getElementById('transactionForm');
+  form.querySelector('[name="receiver"]').value = transaction.receiver;
+  form.querySelector('[name="type"]').value = transaction.type;
+  form.querySelector('[name="amount"]').value = transaction.amount;
+  form.querySelector('[name="currency"]').value = transaction.currency;
+  form.querySelector('[name="observations"]').value = transaction.observations || '';
+  const modal = new bootstrap.Modal(document.getElementById('newTransactionModal'));
+  modal.show();
+  document.getElementById('saveTransaction').onclick = function () {
+    const formData = new FormData(form);
+    const updatedTransaction = {
+      ...transaction,
+      receiver: formData.get('receiver'),
+      type: formData.get('type'),
+      amount: parseFloat(formData.get('amount')),
+      currency: formData.get('currency'),
+      observations: formData.get('observations')
     };
+    database.ref(`transactions/${key}`).update(updatedTransaction).then(() => {
+      modal.hide();
+      form.reset();
+    }).catch(error => {
+      console.error('Error updating transaction:', error);
+      alert('Error updating transaction. Please try again.');
+    });
+  };
 }
-
 function markAsPaid(key) {
-    if (confirm('¿Marcar esta transacción como pagada?')) {
-        database.ref(`transactions/${key}`).update({ status: 'paid' })
-            .catch(error => {
-                console.error('Error updating transaction status:', error);
-                alert('Error updating transaction status. Please try again.');
-            });
-    }
+  if (confirm('¿Marcar esta transacción como pagada?')) {
+    database.ref(`transactions/${key}`).update({
+      status: 'paid'
+    }).catch(error => {
+      console.error('Error updating transaction status:', error);
+      alert('Error updating transaction status. Please try again.');
+    });
+  }
 }
-
 function deleteTransaction(key) {
-    if (confirm('¿Estás seguro de que quieres eliminar esta transacción?')) {
-        database.ref(`transactions/${key}`).remove()
-            .catch(error => {
-                console.error('Error deleting transaction:', error);
-                alert('Error deleting transaction. Please try again.');
-            });
-    }
+  if (confirm('¿Estás seguro de que quieres eliminar esta transacción?')) {
+    database.ref(`transactions/${key}`).remove().catch(error => {
+      console.error('Error deleting transaction:', error);
+      alert('Error deleting transaction. Please try again.');
+    });
+  }
 }
-
 function updateYearlyChart() {
-    // Destroy existing chart if it exists
-    if (yearlyChart) {
-        yearlyChart.destroy();
+  if (yearlyChart) {
+    yearlyChart.destroy();
+  }
+  const years = [...new Set(transactions.map(t => new Date(t.date).getFullYear()))].sort();
+  const yearSelector = document.getElementById('yearSelector');
+  yearSelector.innerHTML = years.map(year => `<option value="${year}">${year}</option>`).join('');
+  const selectedYear = yearSelector.value || Math.max(...years);
+  const monthlyTotals = Array(12).fill(0).map(() => ({
+    USD: 0,
+    DOP: 0,
+    EUR: 0,
+    MXN: 0
+  }));
+  transactions.forEach(transaction => {
+    const date = new Date(transaction.date);
+    if (date.getFullYear() === parseInt(selectedYear)) {
+      const month = date.getMonth();
+      const amount = parseFloat(transaction.amount);
+      monthlyTotals[month][transaction.currency] += amount;
     }
-
-    // Get available years from transactions
-    const years = [...new Set(transactions.map(t => new Date(t.date).getFullYear()))].sort();
-    
-    // Update year selector
-    const yearSelector = document.getElementById('yearSelector');
-    yearSelector.innerHTML = years.map(year => 
-        `<option value="${year}">${year}</option>`
-    ).join('');
-
-    // Get selected year (default to latest)
-    const selectedYear = yearSelector.value || Math.max(...years);
-
-    // Initialize monthly totals for each currency
-    const monthlyTotals = Array(12).fill(0).map(() => ({
-        USD: 0,
-        DOP: 0,
-        EUR: 0,
-        MXN: 0
-    }));
-
-    // Calculate monthly totals
-    transactions.forEach(transaction => {
-        const date = new Date(transaction.date);
-        if (date.getFullYear() === parseInt(selectedYear)) {
-            const month = date.getMonth();
-            const amount = parseFloat(transaction.amount);
-            monthlyTotals[month][transaction.currency] += amount;
-        }
-    });
-
-    // Prepare data for chart
-    const datasets = Object.keys(monthlyTotals[0]).map(currency => ({
-        label: currency,
-        data: monthlyTotals.map(month => month[currency]),
-        borderWidth: 2,
-        tension: 0.4
-    }));
-
-    // Create chart
-    const ctx = document.getElementById('yearlyChart').getContext('2d');
-    yearlyChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-            datasets: datasets
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: `Total Acumulado por Mes - ${selectedYear}`
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+  });
+  const datasets = Object.keys(monthlyTotals[0]).map(currency => ({
+    label: currency,
+    data: monthlyTotals.map(month => month[currency]),
+    borderWidth: 2,
+    tension: 0.4
+  }));
+  const ctx = document.getElementById('yearlyChart').getContext('2d');
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top'
+      },
+      title: {
+        display: true,
+        text: `Total Acumulado por Mes - ${selectedYear}`
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    },
+    onClick: (event, elements) => {
+      if (elements.length > 0) {
+        const element = elements[0];
+        const label = yearlyChart.data.labels[element.index];
+        const value = yearlyChart.data.datasets[element.datasetIndex].data[element.index];
+        const currency = yearlyChart.data.datasets[element.datasetIndex].label;
+        showChartDetail('yearly', label, value, currency);
+      }
+    }
+  };
+  yearlyChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+      datasets: datasets
+    },
+    options: options
+  });
 }
-
 function initializeCurrencyDashboards() {
-    const currencies = ['USD', 'DOP', 'EUR', 'MXN'];
-    const colors = {
-        USD: 'rgb(13, 110, 253)',
-        DOP: 'rgb(25, 135, 84)',
-        EUR: 'rgb(13, 202, 240)',
-        MXN: 'rgb(255, 193, 7)'
-    };
-
-    currencies.forEach(currency => {
-        const ctx = document.getElementById(`${currency.toLowerCase()}Chart`).getContext('2d');
-        currencyCharts[currency] = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: `${currency} Income`,
-                    data: [],
-                    borderColor: colors[currency],
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        // Load saved goals
-        database.ref(`goals/${currency}`).once('value', snapshot => {
-            const goal = snapshot.val();
-            if (goal) {
-                goals[currency] = goal;
-                updateGoalProgress(currency);
-            }
-        });
-    });
-}
-
-function updateCurrencyCharts() {
-    const currencies = ['USD', 'DOP', 'EUR', 'MXN'];
-    const monthlyData = {};
-
-    // Initialize monthly data structure
-    currencies.forEach(currency => {
-        monthlyData[currency] = Array(12).fill(0);
-    });
-
-    // Calculate monthly totals for each currency
-    transactions.forEach(transaction => {
-        const date = new Date(transaction.date);
-        const month = date.getMonth();
-        const amount = parseFloat(transaction.amount);
-        monthlyData[transaction.currency][month] += amount;
-    });
-
-    // Update charts
-    currencies.forEach(currency => {
-        const chart = currencyCharts[currency];
-        chart.data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        chart.data.datasets[0].data = monthlyData[currency];
-        chart.update();
-
-        // Update current amount display
-        const currentTotal = monthlyData[currency].reduce((a, b) => a + b, 0);
-        document.getElementById(`${currency.toLowerCase()}Current`).textContent = currentTotal.toFixed(2);
-        
-        // Update progress bar
-        updateGoalProgress(currency);
-    });
-}
-
-function setGoal(currency) {
-    document.getElementById('goalCurrency').value = currency;
-    document.getElementById('goalAmount').value = goals[currency] || '';
-    const modal = new bootstrap.Modal(document.getElementById('goalModal'));
-    modal.show();
-}
-
-function saveGoal() {
-    const currency = document.getElementById('goalCurrency').value;
-    const amount = parseFloat(document.getElementById('goalAmount').value);
-    
-    if (!amount || isNaN(amount)) {
-        alert('Please enter a valid goal amount');
-        return;
+  const currencies = ['USD', 'DOP', 'EUR', 'MXN'];
+  const colors = {
+    USD: 'rgb(13, 110, 253)',
+    DOP: 'rgb(25, 135, 84)',
+    EUR: 'rgb(13, 202, 240)',
+    MXN: 'rgb(255, 193, 7)'
+  };
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    },
+    onClick: function (event, elements, chart) {
+      if (elements.length > 0) {
+        const element = elements[0];
+        const chartCurrency = chart.canvas.id.replace('Chart', '').toUpperCase();
+        const label = chart.data.labels[element.index];
+        const value = chart.data.datasets[0].data[element.index];
+        showChartDetail('currency', label, value, chartCurrency);
+      }
     }
-
-    goals[currency] = amount;
-    database.ref(`goals/${currency}`).set(amount);
+  };
+  currencies.forEach(currency => {
+    const ctx = document.getElementById(`${currency.toLowerCase()}Chart`).getContext('2d');
+    currencyCharts[currency] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: `${currency} Income`,
+          data: [],
+          borderColor: colors[currency],
+          tension: 0.4
+        }]
+      },
+      options: {
+        ...chartOptions,
+        plugins: {
+          ...chartOptions.plugins,
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+    currencyCharts[currency].options.onClick = function (event, elements) {
+      if (elements.length > 0) {
+        const element = elements[0];
+        const label = currencyCharts[currency].data.labels[element.index];
+        const value = currencyCharts[currency].data.datasets[0].data[element.index];
+        showChartDetail('currency', label, value, currency);
+      }
+    };
+    database.ref(`goals/${currency}`).once('value', snapshot => {
+      const goal = snapshot.val();
+      if (goal) {
+        goals[currency] = goal;
+        updateGoalProgress(currency);
+      }
+    });
+  });
+}
+function updateCurrencyCharts() {
+  const currencies = ['USD', 'DOP', 'EUR', 'MXN'];
+  const monthlyData = {};
+  currencies.forEach(currency => {
+    monthlyData[currency] = Array(12).fill(0);
+  });
+  transactions.forEach(transaction => {
+    const date = new Date(transaction.date);
+    const month = date.getMonth();
+    const amount = parseFloat(transaction.amount);
+    monthlyData[transaction.currency][month] += amount;
+  });
+  currencies.forEach(currency => {
+    const chart = currencyCharts[currency];
+    chart.data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    chart.data.datasets[0].data = monthlyData[currency];
+    chart.update();
+    const currentTotal = monthlyData[currency].reduce((a, b) => a + b, 0);
+    document.getElementById(`${currency.toLowerCase()}Current`).textContent = currentTotal.toFixed(2);
     updateGoalProgress(currency);
-    
-    bootstrap.Modal.getInstance(document.getElementById('goalModal')).hide();
+  });
 }
-
+function setGoal(currency) {
+  document.getElementById('goalCurrency').value = currency;
+  document.getElementById('goalAmount').value = goals[currency] || '';
+  const modal = new bootstrap.Modal(document.getElementById('goalModal'));
+  modal.show();
+}
+function saveGoal() {
+  const currency = document.getElementById('goalCurrency').value;
+  const amount = parseFloat(document.getElementById('goalAmount').value);
+  if (!amount || isNaN(amount)) {
+    alert('Please enter a valid goal amount');
+    return;
+  }
+  goals[currency] = amount;
+  database.ref(`goals/${currency}`).set(amount);
+  updateGoalProgress(currency);
+  bootstrap.Modal.getInstance(document.getElementById('goalModal')).hide();
+}
 function updateGoalProgress(currency) {
-    const goal = goals[currency] || 0;
-    const currentAmount = parseFloat(document.getElementById(`${currency.toLowerCase()}Current`).textContent);
-    const progress = goal > 0 ? (currentAmount / goal) * 100 : 0;
-    
-    document.getElementById(`${currency.toLowerCase()}Progress`).style.width = `${Math.min(100, progress)}%`;
-    document.getElementById(`${currency.toLowerCase()}Goal`).textContent = goal.toFixed(2);
+  const goal = goals[currency] || 0;
+  const currentAmount = parseFloat(document.getElementById(`${currency.toLowerCase()}Current`).textContent);
+  const progress = goal > 0 ? currentAmount / goal * 100 : 0;
+  document.getElementById(`${currency.toLowerCase()}Progress`).style.width = `${Math.min(100, progress)}%`;
+  document.getElementById(`${currency.toLowerCase()}Goal`).textContent = goal.toFixed(2);
 }
-</script>
+function showChartDetail(type, label, value, currency) {
+  const modalContent = document.getElementById('chartDetailContent');
+  const filteredTransactions = transactions.filter(t => {
+    const date = new Date(t.date);
+    if (type === 'yearly') {
+      return date.toLocaleString('default', {
+        month: 'long'
+      }) === label && t.currency === currency;
+    } else {
+      return t.currency === currency && date.toLocaleString('default', {
+        month: 'short'
+      }) === label;
+    }
+  });
+  let html = `
+        <div class="chart-detail-header mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h4 class="mb-0">
+                        <span class="badge bg-primary">${currency}</span>
+                        <span class="ms-2">${label}</span>
+                    </h4>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h5 class="text-success mb-0">
+                        Total: ${formatCurrency(value, currency)}
+                    </h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-detail-stats row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">Transacciones</h6>
+                        <h3 class="card-title mb-0">${filteredTransactions.length}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">Promedio</h6>
+                        <h3 class="card-title mb-0">
+                            ${formatCurrency(value / (filteredTransactions.length || 1), currency)}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">Mayor Transacción</h6>
+                        <h3 class="card-title mb-0">
+                            ${formatCurrency(Math.max(...filteredTransactions.map(t => t.amount), 0), currency)}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h5 class="mb-3">
+            <i class="fas fa-list-ul me-2"></i>
+            Detalle de Transacciones
+        </h5>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Receptor</th>
+                        <th>Tipo</th>
+                        <th class="text-end">Monto</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+  if (filteredTransactions.length > 0) {
+    filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+    filteredTransactions.forEach(t => {
+      html += `
+                <tr>
+                    <td>${new Date(t.date).toLocaleDateString()}</td>
+                    <td>${t.receiver}</td>
+                    <td>
+                        <span class="badge bg-info">
+                            ${t.type === 'tip' ? 'Propina' : t.type === 'commission' ? 'Comisión' : 'Venta'}
+                        </span>
+                    </td>
+                    <td class="text-end fw-bold">${formatCurrency(t.amount, t.currency)}</td>
+                    <td>
+                        <span class="badge ${t.status === 'pending' ? 'bg-warning' : 'bg-success'}">
+                            ${t.status === 'pending' ? 'Pendiente' : 'Pagado'}
+                        </span>
+                    </td>
+                </tr>
+            `;
+    });
+  } else {
+    html += `
+            <tr>
+                <td colspan="5" class="text-center p-4">
+                    <i class="fas fa-info-circle text-muted me-2"></i>
+                    No se encontraron transacciones para este período
+                </td>
+            </tr>
+        `;
+  }
+  html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+  modalContent.innerHTML = html;
+  const modal = new bootstrap.Modal(document.getElementById('chartDetailModal'));
+  modal.show();
+}</script>
 
 </body>
 </html>
