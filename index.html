@@ -1,1611 +1,1132 @@
-<html><head><base href="." />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InHouse Manager - InHouse</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        :root {
-            --primary-color: #4a90e2;
-            --secondary-color: #f5f6fa;
-            --text-color: #2d3436;
-            --accent-color: #6c5ce7;
-            --success-color: #00b894;
-            --warning-color: #fdcb6e;
-            --danger-color: #d63031;
-        }
-
-        .navbar {
-            background: white;
-            padding: 0.8rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            transition: color 0.3s ease;
-            cursor: pointer;
-        }
-
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-color);
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            background: var(--secondary-color);
-            color: var(--primary-color);
-        }
-
-        .nav-links i {
-            font-size: 1.5rem;
-            margin-bottom: 0.2rem;
-        }
-
-        .nav-links span {
-            font-size: 0.7rem;
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: white;
-                padding: 0.5rem;
-                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-                justify-content: space-around;
-            }
-            
-            .nav-links span {
-                display: block;
-            }
-        }
-
-        .main-content {
-            margin-top: 100px;
-            padding: 2rem;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
-
-        .stat-card::after {
-            content: '👆 Click para ver detalles';
-            display: block;
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 0.5rem;
-        }
-
-        .stat-card i {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-        }
-
-        .stat-card h3 {
-            font-size: 2rem;
-            color: var(--text-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-card p {
-            color: #666;
-            margin: 0;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-stats {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-        }
-
-        .room-table {
-            width: 100%;
-            background: white;
-            border-radius: 15px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-            max-width: 100%;
-            margin-top: 2rem;
-        }
-
-        .room-table table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px; /* Ensures table doesn't compress too much */
-        }
-
-        .room-table th {
-            background: var(--primary-color);
-            color: white;
-            padding: 1rem;
-            text-align: left;
-            font-weight: 500;
-            position: sticky;
-            top: 0;
-            z-index: 10; /* Keep header cells visible */
-        }
-
-        .room-table td {
-            padding: 1rem;
-            border-bottom: 1px solid var(--secondary-color);
-            vertical-align: middle;
-        }
-
-        .room-table tr:hover {
-            background: rgba(74, 144, 226, 0.1) !important;
-        }
-
-        .room-table .status-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .room-table .status-encasa {
-            background-color: var(--success-color);
-            color: white;
-        }
-
-        .room-table .status-llegada {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .room-table .status-salida {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
-        .room-table .actions {
-            display: flex;
-            gap: 0.3rem !important;
-        }
-
-        .room-table .btn-action {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 768px) {
-            .room-table {
-                margin: 1rem -1rem;
-                padding: 0;
-                border-radius: 0; /* Remove border radius on mobile for full-width appearance */
-            }
-
-            .room-table td, .room-table th {
-                padding: 0.5rem;
-            }
-
-            .observation-cell {
-                max-width: 100px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .actions {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 0.2rem !important;
-            }
-
-            .btn-action {
-                padding: 0.3rem !important;
-                font-size: 1rem !important;
-            }
-
-            .status-badge {
-                padding: 0.3rem 0.6rem !important;
-                font-size: 0.75rem !important;
-            }
-
-            /* Show all important columns on mobile */
-            .room-table th:not(.mobile-hide),
-            .room-table td:not(.mobile-hide) {
-                display: table-cell !important;
-            }
-        }
-
-        /* Additional styles for better table appearance */
-        .room-table td {
-            vertical-align: middle;
-        }
-
-        .observation-cell {
-            max-width: 200px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .actions {
-            display: flex;
-            gap: 0.3rem !important;
-            flex-wrap: nowrap;
-        }
-
-        .btn-action {
-            white-space: nowrap;
-        }
-
-        .search-bar {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        @media (min-width: 768px) {
-            .search-bar {
-                flex-direction: row;
-                align-items: center;
-            }
-            
-            .search-bar .btn {
-                white-space: nowrap;
-            }
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid var(--secondary-color);
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-        }
-
-        .daily-visits {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .visit-counter {
-            flex: 1;
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .visit-counter h3 {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .visit-counter p {
-            color: var(--text-color);
-            margin: 0;
-            font-size: 0.9rem;
-        }
-
-        .modal-content {
-            border-radius: 15px;
-        }
-
-        .modal-header {
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 15px 15px 0 0;
-        }
-
-        .modal-header .btn-close {
-            filter: brightness(0) invert(1);
-        }
-
-        .form-control, .form-select {
-            border-radius: 8px;
-            border: 2px solid var(--secondary-color);
-            padding: 0.5rem 1rem;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
-        }
-
-        .modal-header {
-            border-bottom: none;
-            padding: 1.5rem;
-        }
-
-        .modal-footer {
-            border-top: none;
-            padding: 1.5rem;
-        }
-
-        .form-label {
-            font-weight: 500;
-            color: var(--text-color);
-        }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .modal-content {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .visit-btn {
-            padding: 0.3rem 0.6rem !important;
-            font-size: 0.8rem !important;
-        }
-
-        .visit-btn.morning {
-            background-color: #ffd43b !important;
-            border-color: #ffd43b !important;
-            color: #000 !important;
-        }
-
-        .visit-btn.evening {
-            background-color: #339af0 !important;
-            border-color: #339af0 !important;
-            color: white !important;
-        }
-
-        .visit-btn.unverified {
-            background-color: #e9ecef !important;
-            border-color: #dee2e6 !important;
-            color: #6c757d !important;
-        }
-
-        .visit-btn.morning.verified {
-            background-color: #ffd43b !important;
-            border-color: #ffd43b !important;
-            color: #000 !important;
-        }
-
-        .visit-btn.evening.verified {
-            background-color: #339af0 !important;
-            border-color: #339af0 !important;
-            color: white !important;
-        }
-
-        .room-table tr {
-            transition: background-color 0.2s ease;
-        }
-
-        .actions {
-            gap: 0.3rem !important;
-        }
-
-        /* Add scrollbar styling for better visibility */
-        .room-table::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .room-table::-webkit-scrollbar-track {
-            background: var(--secondary-color);
-            border-radius: 4px;
-        }
-
-        .room-table::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 4px;
-        }
-
-        .room-table::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-color);
-        }
-
-        .room-grid {
-            scroll-behavior: smooth;
-        }
-
-        .special-request-icon {
-            margin-left: 0.5rem;
-            font-size: 1.2rem;
-            vertical-align: middle;
-        }
-
-        @media (max-width: 768px) {
-            .special-request-icon {
-                font-size: 1rem;
-            }
-        }
-
-        .guest-details-card {
-            background: white;
-            border-radius: 15px;
-        }
-
-        .detail-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .detail-group h6 {
-            color: var(--primary-color);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .detail-group p {
-            margin: 0;
-            font-size: 1.1rem;
-        }
-
-        .badge {
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-        }
-
-        @media (max-width: 768px) {
-            .guest-details-card {
-                padding: 1rem !important;
-            }
-            
-            .detail-group {
-                margin-bottom: 1rem;
-            }
-            
-            .detail-group h6 {
-                font-size: 0.9rem;
-            }
-            
-            .detail-group p {
-                font-size: 1rem;
-            }
-            
-            .badge {
-                padding: 0.3rem 0.6rem;
-            }
-        }
-    </style>
+<html><head><base href=".">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Control de Ingresos</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+<!-- Animate.css -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+
+<style>
+.currency-symbol {
+    font-weight: bold;
+    color: #2d4f83;
+}
+
+.dashboard-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.card-text {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.currency-amount {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.currency-amount:last-child {
+    margin-bottom: 0;
+}
+
+.sidebar {
+    min-height: 100vh;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link {
+    padding: 0.8rem 1rem;
+    margin: 0.2rem 0;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.modal-content {
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.form-select, .form-control {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+}
+
+#loadingIndicator {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+</style>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">InHouse Manager</div>
-            <button class="menu-toggle" aria-label="Toggle menu">
-                <i class="ri-menu-line"></i>
-            </button>
-            <div class="nav-links">
-                <a href="index.html">
-                    <i class="ri-home-4-line"></i>
-                    <span>Home</span>
-                </a>
-                <a href="inhouse.html">
-                    <i class="ri-hotel-line"></i>
-                    <span>InHouse</span>
-                </a>
-                <a href="seguimientos.html">
-                    <i class="ri-file-list-3-line"></i>
-                    <span>Seguimientos</span>
-                </a>
-                <a href="ventas.html">
-                    <i class="ri-shopping-cart-line"></i>
-                    <span>Ventas</span>
-                </a>
-            </div>
-        </div>
-    </nav>
+<body class="bg-light">
 
-    <main class="main-content">
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="Buscar por número de habitación o nombre del huésped..." id="searchInput">
-            <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addGuestModal">
-                <i class="ri-add-line"></i> Agregar Huésped
-            </button>
-        </div>
-
-        <div class="dashboard-stats">
-            <div class="stat-card">
-                <i class="ri-home-smile-fill"></i>
-                <h3 id="guestsInHouse">0</h3>
-                <p>Huéspedes En Casa</p>
-            </div>
-            <div class="stat-card">
-                <i class="ri-login-circle-fill"></i>
-                <h3 id="arrivalsToday">0</h3>
-                <p>Llegadas Hoy</p>
-            </div>
-            <div class="stat-card">
-                <i class="ri-logout-circle-fill"></i>
-                <h3 id="departuresTotal">0</h3>
-                <p>Salidas Hoy</p>
-            </div>
-            <div class="stat-card">
-                <i class="ri-group-fill"></i>
-                <h3 id="totalVisited">0</h3>
-                <p>Total Visitados</p>
-            </div>
-        </div>
-
-        <div class="daily-visits">
-            <div class="visit-counter">
-                <h3 id="morningVisits">0</h3>
-                <p>Visitas Matutinas</p>
-            </div>
-            <div class="visit-counter">
-                <h3 id="eveningVisits">0</h3>
-                <p>Visitas Vespertinas</p>
-            </div>
-        </div>
-
-        <div class="room-grid" id="roomGrid">
-            <div class="room-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Hab.</th>
-                            <th>Huésped</th>
-                            <th>Check-out</th>
-                            <th>Estado</th>
-                            <th>Observaciones</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="roomTableBody">
-                        <!-- Rows will be populated dynamically -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-
-    <div class="modal fade" id="addGuestModal" tabindex="-1" aria-labelledby="addGuestModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addGuestModalLabel">Agregar Nuevo Huésped</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addGuestForm">
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="roomNumber" class="form-label">Número de Habitación</label>
-                                <input type="number" class="form-control" id="roomNumber" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="guestName" class="form-label">Nombre del Huésped</label>
-                                <input type="text" class="form-control" id="guestName" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="checkIn" class="form-label">Check-in</label>
-                                <input type="date" class="form-control" id="checkIn" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="checkOut" class="form-label">Check-out</label>
-                                <input type="date" class="form-control" id="checkOut" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="nationality" class="form-label">Nacionalidad</label>
-                                <input type="text" class="form-control" id="nationality" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="status" class="form-label">Estado</label>
-                                <select class="form-select" id="status" required>
-                                    <option value="">Seleccionar estado</option>
-                                    <option value="encasa">En Casa</option>
-                                    <option value="llegada">Llegada</option>
-                                    <option value="salida">Salida</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="specialRequest" class="form-label">
-                                    <i class="ri-gift-line"></i>
-                                    Solicitud Especial
-                                </label>
-                                <select class="form-select" id="specialRequest">
-                                    <option value="">Seleccionar solicitud</option>
-                                    <option value="birthday">🎂 Cumpleaños</option>
-                                    <option value="honeymoon">💑 Luna de Miel</option>
-                                    <option value="anniversary">💝 Aniversario</option>
-                                    <option value="vacation">🌴 Vacaciones</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="observation" class="form-label">Observación</label>
-                            <textarea class="form-control" id="observation" rows="3"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="saveGuest()">Guardar</button>
-                </div>
-            </div>
-        </div>
+<div id="loadingIndicator">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
     </div>
+</div>
 
-    <!-- Details Modal -->
-    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="detailsModalLabel">Detalles del Huésped</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="guestDetailsContent">
-                    <!-- Content will be populated dynamically -->
-                </div>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active text-white" href="#" data-bs-toggle="tab" data-bs-target="#dashboard">
+                            <i class="fas fa-chart-line me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#" data-bs-toggle="tab" data-bs-target="#transactions">
+                            <i class="fas fa-list me-2"></i> Transacciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#" data-bs-toggle="tab" data-bs-target="#pending">
+                            <i class="fas fa-clock me-2"></i> Pendientes
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
-    </div>
 
-    <!-- Edit Guest Modal -->
-    <div class="modal fade" id="editGuestModal" tabindex="-1" aria-labelledby="editGuestModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-warning text-white">
-                    <h5 class="modal-title" id="editGuestModalLabel">Editar Huésped</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editGuestForm">
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="editRoomNumber" class="form-label">Número de Habitación</label>
-                                <input type="number" class="form-control" id="editRoomNumber" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="editGuestName" class="form-label">Nombre del Huésped</label>
-                                <input type="text" class="form-control" id="editGuestName" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="editCheckIn" class="form-label">Check-in</label>
-                                <input type="date" class="form-control" id="editCheckIn" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="editCheckOut" class="form-label">Check-out</label>
-                                <input type="date" class="form-control" id="editCheckOut" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="editNationality" class="form-label">Nacionalidad</label>
-                                <input type="text" class="form-control" id="editNationality" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="editStatus" class="form-label">Estado</label>
-                                <select class="form-select" id="editStatus" required>
-                                    <option value="encasa">En Casa</option>
-                                    <option value="llegada">Llegada</option>
-                                    <option value="salida">Salida</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="editSpecialRequest" class="form-label">
-                                    <i class="ri-gift-line"></i>
-                                    Solicitud Especial
-                                </label>
-                                <select class="form-select" id="editSpecialRequest">
-                                    <option value="">Seleccionar solicitud</option>
-                                    <option value="birthday">🎂 Cumpleaños</option>
-                                    <option value="honeymoon">💑 Luna de Miel</option>
-                                    <option value="anniversary">💝 Aniversario</option>
-                                    <option value="vacation">🌴 Vacaciones</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editObservation" class="form-label">Observación</label>
-                            <textarea class="form-control" id="editObservation" rows="3"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-warning" onclick="saveEdit()">Guardar Cambios</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Follow-up Modal -->
-    <div class="modal fade" id="followUpModal" tabindex="-1" aria-labelledby="followUpModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="followUpModalLabel">
-                        <i class="ri-file-list-3-line me-2"></i>
-                        Nuevo Seguimiento
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="followUpForm" class="needs-validation" novalidate>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="followUpRoom" class="form-label">
-                                    <i class="ri-home-4-line me-1"></i>
-                                    Habitación
-                                </label>
-                                <input type="text" class="form-control" id="followUpRoom" required readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="followUpDate" class="form-label">
-                                    <i class="ri-calendar-line me-1"></i>
-                                    Fecha
-                                </label>
-                                <input type="date" class="form-control" id="followUpDate" required>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="followUpMood" class="form-label">
-                                    <i class="ri-emotion-line me-1"></i>
-                                    Estado de Ánimo
-                                </label>
-                                <select class="form-select" id="followUpMood" required>
-                                    <option value="">Seleccionar estado</option>
-                                    <option value="happy">😊 Feliz</option>
-                                    <option value="neutral">😐 Neutral</option>
-                                    <option value="upset">😟 Molesto</option>
-                                    <option value="angry">😠 Enojado</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="followUpCategory" class="form-label">
-                                    <i class="ri-folder-line me-1"></i>
-                                    Categoría
-                                </label>
-                                <select class="form-select" id="followUpCategory" required>
-                                    <option value="">Seleccionar categoría</option>
-                                    <option value="maintenance">Mantenimiento</option>
-                                    <option value="housekeeping">Limpieza</option>
-                                    <option value="service">Servicio</option>
-                                    <option value="complaint">Queja</option>
-                                    <option value="request">Solicitud</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="followUpNotes" class="form-label">
-                                <i class="ri-file-text-line me-1"></i>
-                                Notas del Seguimiento
-                            </label>
-                            <textarea class="form-control" id="followUpNotes" rows="4" required></textarea>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="followUpAction" class="form-label">
-                                    <i class="ri-error-warning-line me-1"></i>
-                                    Requiere Acción
-                                </label>
-                                <select class="form-select" id="followUpAction" required>
-                                    <option value="no">No</option>
-                                    <option value="yes">Sí</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="followUpPriority" class="form-label">
-                                    <i class="ri-flag-line me-1"></i>
-                                    Prioridad
-                                </label>
-                                <select class="form-select" id="followUpPriority" required>
-                                    <option value="low">Baja</option>
-                                    <option value="medium">Media</option>
-                                    <option value="high">Alta</option>
-                                    <option value="urgent">Urgente</option>
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="ri-close-line me-1"></i>
-                        Cancelar
-                    </button>
-                    <button type="button" class="btn btn-primary" onclick="saveFollowUp()">
-                        <i class="ri-save-line me-1"></i>
-                        Guardar Seguimiento
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-        import { getDatabase, ref, onValue, push, set, get } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
-            authDomain: "ismakun-bf0fa.firebaseapp.com",
-            databaseURL: "https://ismakun-bf0fa-default-rtdb.firebaseio.com",
-            projectId: "ismakun-bf0fa",
-            storageBucket: "ismakun-bf0fa.appspot.com",
-            messagingSenderId: "1028877703945",
-            appId: "1:1028877703945:web:331de48acbcdf2234a51d8"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-
-        // Helper function for timezone conversion
-        function getLocalDateTime() {
-          const now = new Date();
-          // Adjust for GMT-4
-          const offset = -4;
-          const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-          return new Date(utc + (3600000 * offset));
-        }
-
-        // Daily visits counter functionality
-        function initializeDailyVisits() {
-            const now = getLocalDateTime();
-            const today = now.toDateString();
-            
-            // Check if we need to reset counters
-            const lastUpdate = localStorage.getItem('lastVisitUpdate');
-            if (lastUpdate !== today) {
-                localStorage.setItem('morningVisits', '0');
-                localStorage.setItem('eveningVisits', '0');
-                localStorage.setItem('lastVisitUpdate', today);
-                localStorage.removeItem('visitedRooms');
-            }
-            
-            // Update counters display
-            updateVisitCounters();
-        }
-
-        function updateVisitCounters() {
-            document.getElementById('morningVisits').textContent = localStorage.getItem('morningVisits') || '0';
-            document.getElementById('eveningVisits').textContent = localStorage.getItem('eveningVisits') || '0';
-        }
-
-        function incrementVisit() {
-            const now = getLocalDateTime();
-            const hour = now.getHours();
-            
-            // Morning is considered 6 AM to 5:59 PM
-            if (hour >= 6 && hour < 18) {
-                const current = parseInt(localStorage.getItem('morningVisits') || '0');
-                localStorage.setItem('morningVisits', (current + 1).toString());
-            } else {
-                const current = parseInt(localStorage.getItem('eveningVisits') || '0');
-                localStorage.setItem('eveningVisits', (current + 1).toString());
-            }
-            
-            updateVisitCounters();
-        }
-
-        // Load and display rooms
-        function loadRooms() {
-            const guestsRef = ref(database, 'guests');
-            onValue(guestsRef, (snapshot) => {
-                const roomTableBody = document.getElementById('roomTableBody');
-                roomTableBody.innerHTML = '';
-                
-                // Convert snapshot to array and sort by room number
-                const guests = [];
-                snapshot.forEach((childSnapshot) => {
-                    guests.push({
-                        id: childSnapshot.key,
-                        ...childSnapshot.val()
-                    });
-                });
-
-                // Sort guests array by room number
-                guests.sort((a, b) => {
-                    return parseInt(a.roomNumber) - parseInt(b.roomNumber);
-                });
-                
-                // Create table rows with sorted data
-                guests.forEach((guest) => {
-                    const row = createTableRow(guest, guest.id);
-                    roomTableBody.appendChild(row);
-                });
-
-                // Update dashboard stats
-                updateDashboardStats();
-            });
-        }
-
-        function createTableRow(guest, guestId) {
-            const specialRequestIcons = {
-                'birthday': '🎂',
-                'honeymoon': '💑',
-                'anniversary': '💝',
-                'vacation': '🌴'
-            };
-
-            const tr = document.createElement('tr');
-            tr.setAttribute('data-status', guest.status);
-            tr.style.cursor = 'pointer';
-            
-            const specialRequestIcon = guest.specialRequest ? 
-                `<span class="special-request-icon" title="${guest.specialRequest}">${specialRequestIcons[guest.specialRequest]}</span>` : '';
-
-            tr.innerHTML = `
-                <td class="fw-bold">${guest.roomNumber}</td>
-                <td>${guest.guestName} ${specialRequestIcon}</td>
-                <td>${guest.checkOut}</td>
-                <td>
-                    <span class="status-badge status-${guest.status}">
-                        ${getStatusIcon(guest.status)} ${getStatusText(guest.status)}
-                    </span>
-                </td>
-                <td class="observation-cell">${guest.observation || '-'}</td>
-                <td>
-                    <div class="actions">
-                        <button class="btn-action btn-sm btn-success visit-btn morning unverified" onclick="event.stopPropagation(); markVisit('morning', ${guest.roomNumber})">
-                            <i class="ri-sun-line"></i>
-                            <span class="d-none d-md-inline">Matutina</span>
-                        </button>
-                        <button class="btn-action btn-sm btn-info visit-btn evening unverified" onclick="event.stopPropagation(); markVisit('evening', ${guest.roomNumber})">
-                            <i class="ri-moon-line"></i>
-                            <span class="d-none d-md-inline">Vespertina</span>
-                        </button>
-                        <button class="btn-action btn-primary" onclick="event.stopPropagation(); addFollowUp('${guestId}')">
-                            <i class="ri-add-line"></i>
-                            <span class="d-none d-md-inline">Seguimiento</span>
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="tab-content">
+                <!-- Dashboard -->
+                <div class="tab-pane fade show active" id="dashboard">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1>Dashboard</h1>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTransactionModal">
+                            <i class="fas fa-plus"></i> Nueva Entrada
                         </button>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="card dashboard-card bg-primary text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total del Mes</h5>
+                                    <h2 class="card-text" id="monthlyTotal">$0.00</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card dashboard-card bg-success text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Ismael debe a Nathanael</h5>
+                                    <h2 class="card-text" id="ismaelDebt">$0.00</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card dashboard-card bg-info text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Nathanael debe a Ismael</h5>
+                                    <h2 class="card-text" id="nathanaelDebt">$0.00</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="recent-transactions">
+                        <h3>Transacciones Recientes</h3>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Receptor</th>
+                                        <th>Tipo</th>
+                                        <th>Monto</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentTransactionsTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="yearly-chart mt-4">
+                        <div class="card dashboard-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h3 class="card-title">Total Acumulado por Mes</h3>
+                                    <select id="yearSelector" class="form-select" style="width: auto;">
+                                        <!-- Years will be populated dynamically -->
+                                    </select>
+                                </div>
+                                <canvas id="yearlyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="currency-dashboard mt-4">
+                        <div class="row">
+                            <!-- USD Dashboard Card -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card dashboard-card">
+                                    <div class="card-header bg-primary text-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">USD Dashboard</h5>
+                                            <button class="btn btn-sm btn-light" onclick="setGoal('USD')">
+                                                <i class="fas fa-flag"></i> Set Goal
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="usdChart"></canvas>
+                                        <div class="progress mt-3">
+                                            <div id="usdProgress" class="progress-bar" role="progressbar"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-2">
+                                            <small>Current: $<span id="usdCurrent">0</span></small>
+                                            <small>Goal: $<span id="usdGoal">0</span></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- DOP Dashboard Card -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card dashboard-card">
+                                    <div class="card-header bg-success text-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">DOP Dashboard</h5>
+                                            <button class="btn btn-sm btn-light" onclick="setGoal('DOP')">
+                                                <i class="fas fa-flag"></i> Set Goal
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="dopChart"></canvas>
+                                        <div class="progress mt-3">
+                                            <div id="dopProgress" class="progress-bar bg-success" role="progressbar"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-2">
+                                            <small>Current: RD$<span id="dopCurrent">0</span></small>
+                                            <small>Goal: RD$<span id="dopGoal">0</span></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- EUR Dashboard Card -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card dashboard-card">
+                                    <div class="card-header bg-info text-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">EUR Dashboard</h5>
+                                            <button class="btn btn-sm btn-light" onclick="setGoal('EUR')">
+                                                <i class="fas fa-flag"></i> Set Goal
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="eurChart"></canvas>
+                                        <div class="progress mt-3">
+                                            <div id="eurProgress" class="progress-bar bg-info" role="progressbar"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-2">
+                                            <small>Current: €<span id="eurCurrent">0</span></small>
+                                            <small>Goal: €<span id="eurGoal">0</span></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- MXN Dashboard Card -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card dashboard-card">
+                                    <div class="card-header bg-warning text-dark">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">MXN Dashboard</h5>
+                                            <button class="btn btn-sm btn-light" onclick="setGoal('MXN')">
+                                                <i class="fas fa-flag"></i> Set Goal
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="mxnChart"></canvas>
+                                        <div class="progress mt-3">
+                                            <div id="mxnProgress" class="progress-bar bg-warning" role="progressbar"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-2">
+                                            <small>Current: MX$<span id="mxnCurrent">0</span></small>
+                                            <small>Goal: MX$<span id="mxnGoal">0</span></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div class="tab-pane fade" id="transactions">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1>Transacciones</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group me-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="exportTransactions">
+                                    <i class="fas fa-download"></i> Exportar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterReceiver">
+                                <option value="">Todos los Receptores</option>
+                                <option value="Ismael">Ismael</option>
+                                <option value="Nathanael">Nathanael</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterType">
+                                <option value="">Todos los Tipos</option>
+                                <option value="tip">Propina</option>
+                                <option value="commission">Comisión</option>
+                                <option value="sale">Venta</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterStatus">
+                                <option value="">Todos los Estados</option>
+                                <option value="pending">Pendiente</option>
+                                <option value="paid">Pagado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterCurrency">
+                                <option value="">Todas las Monedas</option>
+                                <option value="USD">USD</option>
+                                <option value="DOP">DOP</option>
+                                <option value="EUR">EUR</option>
+                                <option value="MXN">MXN</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha <i class="fas fa-sort"></i></th>
+                                    <th>Receptor <i class="fas fa-sort"></i></th>
+                                    <th>Tipo <i class="fas fa-sort"></i></th>
+                                    <th>Monto <i class="fas fa-sort"></i></th>
+                                    <th>Estado</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsTableBody" data-sort="" data-direction="">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pending Tab -->
+                <div class="tab-pane fade" id="pending">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1>Transacciones Pendientes</h1>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Receptor</th>
+                                    <th>Tipo</th>
+                                    <th>Monto</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendingTransactionsTable">
+                                <!-- Pending transactions will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- New Transaction Modal -->
+<div class="modal fade" id="newTransactionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nueva Entrada de Dinero</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="transactionForm">
+                    <div class="mb-3">
+                        <label class="form-label">Receptor</label>
+                        <select class="form-select" name="receiver" required>
+                            <option value="Ismael">Ismael</option>
+                            <option value="Nathanael">Nathanael</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo</label>
+                        <select class="form-select" name="type" required>
+                            <option value="tip">Propina</option>
+                            <option value="commission">Comisión</option>
+                            <option value="sale">Venta</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Monto</label>
+                        <input type="number" class="form-control" name="amount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Moneda</label>
+                        <select class="form-select" name="currency" required>
+                            <option value="USD">USD - Dólar Estadounidense</option>
+                            <option value="DOP">DOP - Peso Dominicano</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="MXN">MXN - Peso Mexicano</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-control" name="observations"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="saveTransaction">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Goal Setting Modal -->
+<div class="modal fade" id="goalModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Set Goal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="goalForm">
+                    <input type="hidden" id="goalCurrency">
+                    <div class="mb-3">
+                        <label class="form-label">Monthly Goal Amount</label>
+                        <input type="number" class="form-control" id="goalAmount" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveGoal()">Save Goal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Updated Firebase SDK scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+
+<!-- Add Chart.js before the closing </body> tag -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+let transactions = [];
+let yearlyChart = null;
+let currencyCharts = {};
+let goals = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing application...');
+    
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDUirwoSQgvcMZn7uLjKMAxlTA15Jkl2BM",
+        authDomain: "ismakun-bf0fa.firebaseapp.com",
+        databaseURL: "https://ismakun-bf0fa-default-rtdb.firebaseio.com",
+        projectId: "ismakun-bf0fa",
+        storageBucket: "ismakun-bf0fa.firebasestorage.app",
+        messagingSenderId: "1028877703945",
+        appId: "1:1028877703945:web:331de48acbcdf2234a51d8"
+    };
+
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const database = firebase.database();
+    window.database = database; // Make database accessible globally
+
+    // Add error handlers to Firebase operations
+    database.ref('.info/connected').on('value', function(snap) {
+        if (snap.val() === true) {
+            console.log('Connected to Firebase');
+        } else {
+            console.log('Disconnected from Firebase');
+        }
+    });
+
+    // Test database connection
+    database.ref('transactions').once('value')
+        .then(snapshot => {
+            console.log('Initial data load successful');
+        })
+        .catch(error => {
+            console.error('Error in initial data load:', error);
+        });
+
+    // Initial load of transactions
+    setupRealtimeListener();
+    document.querySelector('a[data-bs-target="#transactions"]').addEventListener('click', updateTransactionsTab);
+    document.querySelector('a[data-bs-target="#pending"]').addEventListener('click', updatePendingTab);
+
+    // Add filter event listeners
+    ['filterReceiver', 'filterType', 'filterStatus', 'filterCurrency'].forEach(filterId => {
+        document.getElementById(filterId).addEventListener('change', updateTransactionsTab);
+    });
+    
+    // Add export button listener
+    document.getElementById('exportTransactions').addEventListener('click', exportTransactions);
+    
+    // Add save transaction handler
+    document.getElementById('saveTransaction').addEventListener('click', saveNewTransaction);
+    
+    document.getElementById('yearSelector').addEventListener('change', updateYearlyChart);
+    
+    initializeCurrencyDashboards();
+});
+
+function setupRealtimeListener() {
+    try {
+        const transactionsRef = database.ref('transactions');
+        
+        // Listen for data changes
+        transactionsRef.on('value', (snapshot) => {
+            console.log('Data received from Firebase:', snapshot.val());
+            transactions = [];
+            
+            snapshot.forEach((childSnapshot) => {
+                const transaction = {
+                    ...childSnapshot.val(),
+                    key: childSnapshot.key
+                };
+                transactions.push(transaction);
+            });
+            
+            console.log('Processed transactions:', transactions);
+            
+            // Update all views
+            updateDashboard();
+            updateTransactionsTab();
+            updatePendingTab();
+            updateCurrencyCharts();
+        }, (error) => {
+            console.error('Error fetching data:', error);
+            alert('Error al cargar los datos. Por favor, recarga la página.');
+        });
+    } catch (error) {
+        console.error('Setup error:', error);
+        alert('Error al configurar la conexión con la base de datos.');
+    }
+}
+
+function updateDashboard() {
+    // Calculate monthly totals per currency
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    const monthlyTotals = {
+        USD: 0,
+        DOP: 0,
+        EUR: 0,
+        MXN: 0
+    };
+
+    // Calculate debts per currency
+    const ismaelDebts = {
+        USD: 0,
+        DOP: 0,
+        EUR: 0,
+        MXN: 0
+    };
+
+    const nathanaelDebts = {
+        USD: 0,
+        DOP: 0,
+        EUR: 0,
+        MXN: 0
+    };
+
+    transactions.forEach(transaction => {
+        const transactionDate = new Date(transaction.date);
+        const amount = parseFloat(transaction.amount);
+        const currency = transaction.currency;
+        
+        // Calculate monthly totals
+        if (transactionDate.getMonth() === currentMonth && 
+            transactionDate.getFullYear() === currentYear) {
+            monthlyTotals[currency] += amount;
+        }
+
+        // Calculate pending debts
+        if (transaction.status === 'pending') {
+            const splitAmount = amount / 2;
+            if (transaction.receiver === 'Ismael') {
+                ismaelDebts[currency] += splitAmount;
+            } else {
+                nathanaelDebts[currency] += splitAmount;
+            }
+        }
+    });
+
+    // Update UI
+    updateTotalsDisplay('monthlyTotal', monthlyTotals);
+    updateTotalsDisplay('ismaelDebt', ismaelDebts);
+    updateTotalsDisplay('nathanaelDebt', nathanaelDebts);
+    updateRecentTransactions();
+    updateYearlyChart();
+}
+
+function updateTotalsDisplay(elementId, totals) {
+    const element = document.getElementById(elementId);
+    const html = Object.entries(totals)
+        .filter(([_, amount]) => amount > 0)
+        .map(([currency, amount]) => `
+            <div class="currency-amount">
+                ${formatCurrency(amount, currency)}
+            </div>
+        `).join('');
+    
+    element.innerHTML = html || '$0.00';
+}
+
+function updateRecentTransactions() {
+    const recentTransactionsTable = document.getElementById('recentTransactionsTable');
+    const recentTransactions = [...transactions]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 5);
+
+    recentTransactionsTable.innerHTML = recentTransactions.map(transaction => `
+        <tr>
+            <td>${new Date(transaction.date).toLocaleDateString()}</td>
+            <td>${transaction.receiver}</td>
+            <td><span class="badge bg-info">${
+                transaction.type === 'tip' ? 'Propina' : 
+                transaction.type === 'commission' ? 'Comisión' : 'Venta'
+            }</span></td>
+            <td class="text-end">
+                <span class="currency-symbol">${transaction.currency}</span> 
+                ${parseFloat(transaction.amount).toFixed(2)}
+            </td>
+            <td>
+                <span class="badge ${transaction.status === 'pending' ? 'bg-warning' : 'bg-success'}">
+                    ${transaction.status === 'pending' ? 'Pendiente' : 'Pagado'}
+                </span>
+            </td>
+        </tr>
+    `).join('') || `
+        <tr>
+            <td colspan="5" class="text-center p-3">
+                <i class="fas fa-info-circle me-2"></i>
+                No hay transacciones recientes
+            </td>
+        </tr>
+    `;
+}
+
+function saveNewTransaction() {
+    const form = document.getElementById('transactionForm');
+    const formData = new FormData(form);
+    
+    const newTransaction = {
+        receiver: formData.get('receiver'),
+        type: formData.get('type'),
+        amount: parseFloat(formData.get('amount')),
+        currency: formData.get('currency'),
+        observations: formData.get('observations') || '',
+        date: new Date().toISOString(),
+        status: 'pending'
+    };
+
+    // Validate data before saving
+    if (!newTransaction.amount || isNaN(newTransaction.amount)) {
+        alert('Por favor ingrese un monto válido');
+        return;
+    }
+
+    // Show loading indicator
+    document.getElementById('loadingIndicator').style.display = 'block';
+
+    // Save to Firebase
+    database.ref('transactions').push(newTransaction)
+        .then(() => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newTransactionModal'));
+            modal.hide();
+            form.reset();
+            alert('Transacción guardada exitosamente');
+        })
+        .catch(error => {
+            console.error('Error saving transaction:', error);
+            alert('Error al guardar la transacción: ' + error.message);
+        })
+        .finally(() => {
+            document.getElementById('loadingIndicator').style.display = 'none';
+        });
+}
+
+function updateTransactionsTab() {
+    const transactionsTableBody = document.getElementById('transactionsTableBody');
+    transactionsTableBody.innerHTML = '';
+
+    let filteredTransactions = [...transactions];
+    
+    // Apply filters
+    const filterReceiver = document.getElementById('filterReceiver').value;
+    const filterType = document.getElementById('filterType').value;
+    const filterStatus = document.getElementById('filterStatus').value;
+    const filterCurrency = document.getElementById('filterCurrency').value;
+
+    if (filterReceiver) {
+        filteredTransactions = filteredTransactions.filter(t => t.receiver === filterReceiver);
+    }
+    if (filterType) {
+        filteredTransactions = filteredTransactions.filter(t => t.type === filterType);
+    }
+    if (filterStatus) {
+        filteredTransactions = filteredTransactions.filter(t => t.status === filterStatus);
+    }
+    if (filterCurrency) {
+        filteredTransactions = filteredTransactions.filter(t => t.currency === filterCurrency);
+    }
+
+    // Sort transactions by date (most recent first)
+    filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    filteredTransactions.forEach(transaction => {
+        const row = document.createElement('tr');
+        const date = new Date(transaction.date).toLocaleDateString();
+        
+        let typeLabel = {
+            'tip': 'Propina',
+            'commission': 'Comisión',
+            'sale': 'Venta'
+        }[transaction.type] || transaction.type;
+
+        row.innerHTML = `
+            <td>${date}</td>
+            <td>${transaction.receiver}</td>
+            <td><span class="badge bg-info">${typeLabel}</span></td>
+            <td class="text-end">
+                <span class="currency-symbol">${transaction.currency}</span> 
+                ${parseFloat(transaction.amount).toFixed(2)}
+            </td>
+            <td>
+                <span class="badge ${transaction.status === 'pending' ? 'bg-warning' : 'bg-success'}">
+                    ${transaction.status === 'pending' ? 'Pendiente' : 'Pagado'}
+                </span>
+            </td>
+            <td>${transaction.observations || '-'}</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-primary" onclick="editTransaction('${transaction.key}')" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="markAsPaid('${transaction.key}')" 
+                            title="Marcar como pagado" ${transaction.status === 'paid' ? 'disabled' : ''}>
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction('${transaction.key}')" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        transactionsTableBody.appendChild(row);
+    });
+
+    // Add no results message if needed
+    if (filteredTransactions.length === 0) {
+        transactionsTableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center p-3">
+                    <i class="fas fa-search me-2"></i>
+                    No se encontraron transacciones
                 </td>
-            `;
-            
-            tr.addEventListener('click', () => viewDetails(guestId));
-            
-            return tr;
-        }
+            </tr>
+        `;
+    }
+}
 
-        function getStatusIcon(status) {
-            const statusIcons = {
-                'encasa': '<i class="ri-home-smile-fill"></i>',
-                'llegada': '<i class="ri-login-circle-fill"></i>',
-                'salida': '<i class="ri-logout-circle-fill"></i>'
-            };
-            return statusIcons[status] || '';
-        }
+function updatePendingTab() {
+    const pendingTab = document.getElementById('pending');
+    const pendingTransactions = transactions.filter(t => t.status === 'pending');
 
-        function getStatusText(status) {
-            switch(status) {
-                case 'encasa': return 'En Casa';
-                case 'llegada': return 'Llegada';
-                case 'salida': return 'Salida';
-                default: return status;
+    pendingTab.innerHTML = `
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1>Transacciones Pendientes</h1>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Receptor</th>
+                        <th>Tipo</th>
+                        <th>Monto</th>
+                        <th>Observaciones</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${pendingTransactions.length ? pendingTransactions.map(t => `
+                        <tr>
+                            <td>${new Date(t.date).toLocaleDateString()}</td>
+                            <td>${t.receiver}</td>
+                            <td><span class="badge bg-info">${
+                                t.type === 'tip' ? 'Propina' : 
+                                t.type === 'commission' ? 'Comisión' : 'Venta'
+                            }</span></td>
+                            <td>
+                                <span class="currency-symbol">${t.currency}</span> 
+                                ${parseFloat(t.amount).toFixed(2)}
+                            </td>
+                            <td>${t.observations || '-'}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-success" onclick="markAsPaid('${t.key}')" title="Marcar como pagado">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('') : `
+                        <tr>
+                            <td colspan="6" class="text-center p-3">
+                                <i class="fas fa-check-circle me-2"></i>
+                                No hay transacciones pendientes
+                            </td>
+                        </tr>
+                    `}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function formatCurrency(amount, currency) {
+    const formatter = new Intl.NumberFormat('es-DO', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 2
+    });
+    return formatter.format(amount);
+}
+
+function editTransaction(key) {
+    const transaction = transactions.find(t => t.key === key);
+    if (!transaction) return;
+
+    // Populate modal with transaction data
+    const form = document.getElementById('transactionForm');
+    form.querySelector('[name="receiver"]').value = transaction.receiver;
+    form.querySelector('[name="type"]').value = transaction.type;
+    form.querySelector('[name="amount"]').value = transaction.amount;
+    form.querySelector('[name="currency"]').value = transaction.currency;
+    form.querySelector('[name="observations"]').value = transaction.observations || '';
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('newTransactionModal'));
+    modal.show();
+
+    // Update save button to handle edit
+    document.getElementById('saveTransaction').onclick = function() {
+        const formData = new FormData(form);
+        const updatedTransaction = {
+            ...transaction,
+            receiver: formData.get('receiver'),
+            type: formData.get('type'),
+            amount: parseFloat(formData.get('amount')),
+            currency: formData.get('currency'),
+            observations: formData.get('observations')
+        };
+
+        database.ref(`transactions/${key}`).update(updatedTransaction)
+            .then(() => {
+                modal.hide();
+                form.reset();
+            })
+            .catch(error => {
+                console.error('Error updating transaction:', error);
+                alert('Error updating transaction. Please try again.');
+            });
+    };
+}
+
+function markAsPaid(key) {
+    if (confirm('¿Marcar esta transacción como pagada?')) {
+        database.ref(`transactions/${key}`).update({ status: 'paid' })
+            .catch(error => {
+                console.error('Error updating transaction status:', error);
+                alert('Error updating transaction status. Please try again.');
+            });
+    }
+}
+
+function deleteTransaction(key) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta transacción?')) {
+        database.ref(`transactions/${key}`).remove()
+            .catch(error => {
+                console.error('Error deleting transaction:', error);
+                alert('Error deleting transaction. Please try again.');
+            });
+    }
+}
+
+function updateYearlyChart() {
+    // Destroy existing chart if it exists
+    if (yearlyChart) {
+        yearlyChart.destroy();
+    }
+
+    // Get available years from transactions
+    const years = [...new Set(transactions.map(t => new Date(t.date).getFullYear()))].sort();
+    
+    // Update year selector
+    const yearSelector = document.getElementById('yearSelector');
+    yearSelector.innerHTML = years.map(year => 
+        `<option value="${year}">${year}</option>`
+    ).join('');
+
+    // Get selected year (default to latest)
+    const selectedYear = yearSelector.value || Math.max(...years);
+
+    // Initialize monthly totals for each currency
+    const monthlyTotals = Array(12).fill(0).map(() => ({
+        USD: 0,
+        DOP: 0,
+        EUR: 0,
+        MXN: 0
+    }));
+
+    // Calculate monthly totals
+    transactions.forEach(transaction => {
+        const date = new Date(transaction.date);
+        if (date.getFullYear() === parseInt(selectedYear)) {
+            const month = date.getMonth();
+            const amount = parseFloat(transaction.amount);
+            monthlyTotals[month][transaction.currency] += amount;
+        }
+    });
+
+    // Prepare data for chart
+    const datasets = Object.keys(monthlyTotals[0]).map(currency => ({
+        label: currency,
+        data: monthlyTotals.map(month => month[currency]),
+        borderWidth: 2,
+        tension: 0.4
+    }));
+
+    // Create chart
+    const ctx = document.getElementById('yearlyChart').getContext('2d');
+    yearlyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: `Total Acumulado por Mes - ${selectedYear}`
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
             }
         }
+    });
+}
 
-        // Add function to update dashboard stats
-        function updateDashboardStats() {
-            const guestsRef = ref(database, 'guests');
-            get(guestsRef).then((snapshot) => {
-                let inHouseCount = 0;
-                let arrivalsCount = 0;
-                let departuresCount = 0;
-                
-                const today = getLocalDateTime().toISOString().split('T')[0];
-                
-                snapshot.forEach((childSnapshot) => {
-                    const guest = childSnapshot.val();
-                    
-                    if (guest.status === 'encasa') {
-                        inHouseCount++;
+function initializeCurrencyDashboards() {
+    const currencies = ['USD', 'DOP', 'EUR', 'MXN'];
+    const colors = {
+        USD: 'rgb(13, 110, 253)',
+        DOP: 'rgb(25, 135, 84)',
+        EUR: 'rgb(13, 202, 240)',
+        MXN: 'rgb(255, 193, 7)'
+    };
+
+    currencies.forEach(currency => {
+        const ctx = document.getElementById(`${currency.toLowerCase()}Chart`).getContext('2d');
+        currencyCharts[currency] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: `${currency} Income`,
+                    data: [],
+                    borderColor: colors[currency],
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
                     }
-                    
-                    if (guest.checkIn === today) {
-                        arrivalsCount++;
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
-                    
-                    if (guest.checkOut === today) {
-                        departuresCount++;
-                    }
-                });
-                
-                // Get total visited from localStorage
-                const morningVisits = parseInt(localStorage.getItem('morningVisits') || '0');
-                const eveningVisits = parseInt(localStorage.getItem('eveningVisits') || '0');
-                const totalVisited = morningVisits + eveningVisits;
-                
-                // Update the dashboard
-                document.getElementById('guestsInHouse').textContent = inHouseCount;
-                document.getElementById('arrivalsToday').textContent = arrivalsCount;
-                document.getElementById('departuresTotal').textContent = departuresCount;
-                document.getElementById('totalVisited').textContent = totalVisited;
-            });
-        }
-
-        // Show stat details
-        function showStatDetails(statType) {
-            const guestsRef = ref(database, 'guests');
-            get(guestsRef).then((snapshot) => {
-                const guests = [];
-                const today = getLocalDateTime().toISOString().split('T')[0];
-                
-                snapshot.forEach((childSnapshot) => {
-                    guests.push({
-                        id: childSnapshot.key,
-                        ...childSnapshot.val()
-                    });
-                });
-
-                let modalContent = '';
-                let modalTitle = '';
-
-                switch(statType) {
-                    case 'inHouse':
-                        modalTitle = 'Huéspedes En Casa';
-                        modalContent = guests
-                            .filter(g => g.status === 'encasa')
-                            .map(g => `
-                                <div class="guest-details-card p-3 mb-2">
-                                    <div class="row">
-                                        <div class="col-md-4"><strong>Hab ${g.roomNumber}</strong></div>
-                                        <div class="col-md-4">${g.guestName}</div>
-                                        <div class="col-md-4">Check-out: ${g.checkOut}</div>
-                                    </div>
-                                </div>
-                            `).join('') || 'No hay huéspedes en casa';
-                        break;
-                    case 'arrivals':
-                        modalTitle = 'Llegadas de Hoy';
-                        modalContent = guests
-                            .filter(g => g.checkIn === today)
-                            .map(g => `
-                                <div class="guest-details-card p-3 mb-2">
-                                    <div class="row">
-                                        <div class="col-md-4"><strong>Hab ${g.roomNumber}</strong></div>
-                                        <div class="col-md-4">${g.guestName}</div>
-                                        <div class="col-md-4">Check-in: ${g.checkIn}</div>
-                                    </div>
-                                </div>
-                            `).join('') || 'No hay llegadas hoy';
-                        break;
-                    case 'departures':
-                        modalTitle = 'Salidas de Hoy';
-                        modalContent = guests
-                            .filter(g => g.checkOut === today)
-                            .map(g => `
-                                <div class="guest-details-card p-3 mb-2">
-                                    <div class="row">
-                                        <div class="col-md-4"><strong>Hab ${g.roomNumber}</strong></div>
-                                        <div class="col-md-4">${g.guestName}</div>
-                                        <div class="col-md-4">Check-out: ${g.checkOut}</div>
-                                    </div>
-                                </div>
-                            `).join('') || 'No hay salidas hoy';
-                        break;
-                    case 'visited':
-                        modalTitle = 'Visitas del Día';
-                        const morningVisits = parseInt(localStorage.getItem('morningVisits') || '0');
-                        const eveningVisits = parseInt(localStorage.getItem('eveningVisits') || '0');
-                        modalContent = `
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="alert alert-warning">
-                                        <h4 class="alert-heading">Visitas Matutinas</h4>
-                                        <p class="display-4 text-center">${morningVisits}</p>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="alert alert-info">
-                                        <h4 class="alert-heading">Visitas Vespertinas</h4>
-                                        <p class="display-4 text-center">${eveningVisits}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        break;
                 }
-
-                const detailsContent = document.getElementById('guestDetailsContent');
-                detailsContent.innerHTML = modalContent;
-                document.getElementById('detailsModalLabel').textContent = modalTitle;
-                const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
-                modal.show();
-            });
-        }
-
-        // Check and update checkout status
-        function checkAndUpdateCheckouts() {
-            const guestsRef = ref(database, 'guests');
-            get(guestsRef).then((snapshot) => {
-                const tomorrow = getLocalDateTime();
-                tomorrow.setDate(tomorrow.getDate() + 1); 
-                const tomorrowStr = tomorrow.toISOString().split('T')[0];
-                
-                snapshot.forEach((childSnapshot) => {
-                    const guest = childSnapshot.val();
-                    const guestId = childSnapshot.key;
-                    
-                    if (guest.checkOut === tomorrowStr && guest.status !== 'salida') {
-                        // Update status to 'salida'
-                        set(ref(database, `guests/${guestId}/status`), 'salida');
-                    }
-                });
-            });
-        }
-
-        // Modify the initialization to include the checkout check
-        window.addEventListener('DOMContentLoaded', () => {
-            initializeDailyVisits();
-            loadRooms();
-            checkAndUpdateCheckouts(); // Initial check
-            setInterval(checkAndUpdateCheckouts, 3600000); // Check every hour
-            
-            // Add click handlers to stat cards
-            document.querySelectorAll('.stat-card').forEach((card, index) => {
-                card.style.cursor = 'pointer';
-                card.addEventListener('click', () => {
-                    const types = ['inHouse', 'arrivals', 'departures', 'visited'];
-                    showStatDetails(types[index]);
-                });
-            });
+            }
         });
 
-        // Add function to restore visit status from Firebase
-        function restoreVisitsFromFirebase() {
-            const now = getLocalDateTime();
-            const today = now.toDateString();
-            const todayVisitsRef = ref(database, `visits/${today.replace(/\s/g, '_')}`);
-            
-            get(todayVisitsRef).then((snapshot) => {
-                const visits = snapshot.val() || {};
-                
-                // Reset all buttons to unverified state first
-                document.querySelectorAll('.visit-btn').forEach(btn => {
-                    btn.classList.remove('verified');
-                    btn.classList.add('unverified');
-                });
-                
-                // Mark verified visits
-                Object.keys(visits).forEach(roomKey => {
-                    const [roomNumber, timeOfDay] = roomKey.split('-');
-                    const button = document.querySelector(`.visit-btn.${timeOfDay}[onclick*="${roomNumber}"]`);
-                    if (button) {
-                        button.classList.remove('unverified');
-                        button.classList.add('verified');
-                    }
-                });
-                
-                // Update counters
-                let morningCount = 0;
-                let eveningCount = 0;
-                
-                Object.values(visits).forEach(visit => {
-                    if (visit.timeOfDay === 'morning') morningCount++;
-                    if (visit.timeOfDay === 'evening') eveningCount++;
-                });
-                
-                localStorage.setItem('morningVisits', morningCount.toString());
-                localStorage.setItem('eveningVisits', eveningCount.toString());
-                updateVisitCounters();
-            });
-        }
-
-        // Add function to search functionality
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            
-            document.querySelectorAll('.room-table tr').forEach(row => {
-                const roomNumber = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
-                const guestName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                
-                if (roomNumber.includes(searchTerm) || guestName.includes(searchTerm)) {
-                    row.style.display = 'table-row';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+        // Load saved goals
+        database.ref(`goals/${currency}`).once('value', snapshot => {
+            const goal = snapshot.val();
+            if (goal) {
+                goals[currency] = goal;
+                updateGoalProgress(currency);
+            }
         });
+    });
+}
 
-        // Mobile menu functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.querySelector('.menu-toggle');
-            const navLinks = document.querySelector('.nav-links');
+function updateCurrencyCharts() {
+    const currencies = ['USD', 'DOP', 'EUR', 'MXN'];
+    const monthlyData = {};
 
-            menuToggle.addEventListener('click', function() {
-                navLinks.classList.toggle('active');
-            });
+    // Initialize monthly data structure
+    currencies.forEach(currency => {
+        monthlyData[currency] = Array(12).fill(0);
+    });
 
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.nav-container')) {
-                    navLinks.classList.remove('active');
-                }
-            });
+    // Calculate monthly totals for each currency
+    transactions.forEach(transaction => {
+        const date = new Date(transaction.date);
+        const month = date.getMonth();
+        const amount = parseFloat(transaction.amount);
+        monthlyData[transaction.currency][month] += amount;
+    });
 
-            window.addEventListener('resize', function() {
-                if (window.innerWidth > 768) {
-                    navLinks.classList.remove('active');
-                }
-            });
-        });
+    // Update charts
+    currencies.forEach(currency => {
+        const chart = currencyCharts[currency];
+        chart.data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        chart.data.datasets[0].data = monthlyData[currency];
+        chart.update();
 
-        window.saveGuest = function() {
-            const roomNumber = document.getElementById('roomNumber').value;
-            const guestName = document.getElementById('guestName').value;
-            const checkIn = document.getElementById('checkIn').value;
-            const checkOut = document.getElementById('checkOut').value;
-            const nationality = document.getElementById('nationality').value;
-            const status = document.getElementById('status').value;
-            const observation = document.getElementById('observation').value;
-            const specialRequest = document.getElementById('specialRequest').value;
+        // Update current amount display
+        const currentTotal = monthlyData[currency].reduce((a, b) => a + b, 0);
+        document.getElementById(`${currency.toLowerCase()}Current`).textContent = currentTotal.toFixed(2);
+        
+        // Update progress bar
+        updateGoalProgress(currency);
+    });
+}
 
-            if (!roomNumber || !guestName || !checkIn || !checkOut || !nationality || !status) {
-                alert('Por favor complete todos los campos requeridos');
-                return;
-            }
+function setGoal(currency) {
+    document.getElementById('goalCurrency').value = currency;
+    document.getElementById('goalAmount').value = goals[currency] || '';
+    const modal = new bootstrap.Modal(document.getElementById('goalModal'));
+    modal.show();
+}
 
-            const newGuest = {
-                roomNumber,
-                guestName,
-                checkIn,
-                checkOut,
-                nationality,
-                status,
-                observation,
-                specialRequest // Add this field
-            };
+function saveGoal() {
+    const currency = document.getElementById('goalCurrency').value;
+    const amount = parseFloat(document.getElementById('goalAmount').value);
+    
+    if (!amount || isNaN(amount)) {
+        alert('Please enter a valid goal amount');
+        return;
+    }
 
-            const guestsRef = ref(database, 'guests');
-            const newGuestRef = push(guestsRef);
-            
-            set(newGuestRef, newGuest)
-                .then(() => {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('addGuestModal'));
-                    modal.hide();
-                    document.getElementById('addGuestForm').reset();
-                    alert('Huésped agregado exitosamente');
-                })
-                .catch((error) => {
-                    console.error('Error adding guest:', error);
-                    alert('Error al agregar huésped');
-                });
-        };
+    goals[currency] = amount;
+    database.ref(`goals/${currency}`).set(amount);
+    updateGoalProgress(currency);
+    
+    bootstrap.Modal.getInstance(document.getElementById('goalModal')).hide();
+}
 
-        // View details functionality
-        window.viewDetails = function(guestId) {
-            const guestsRef = ref(database, 'guests');
-            onValue(guestsRef, (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const guest = childSnapshot.val();
-                    const id = childSnapshot.key; // Get the guest ID for editing/deleting
-                    if (id === guestId) {
-                        const detailsContent = document.getElementById('guestDetailsContent');
-                        detailsContent.innerHTML = `
-                            <div class="guest-details-card p-4">
-                                <div class="row mb-4">
-                                    <div class="col-md-6">
-                                        <div class="detail-group">
-                                            <h6 class="text-primary mb-3"><i class="ri-home-4-line"></i> Habitación</h6>
-                                            <p class="lead fw-bold">${guest.roomNumber}</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="detail-group">
-                                            <h6 class="text-primary mb-3"><i class="ri-user-line"></i> Huésped</h6>
-                                            <p class="lead fw-bold">${guest.guestName}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mb-4">
-                                    <div class="col-md-6">
-                                        <div class="detail-group">
-                                            <h6 class="text-primary mb-3"><i class="ri-calendar-line"></i> Check-in</h6>
-                                            <p class="badge bg-success fs-6">${guest.checkIn}</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="detail-group">
-                                            <h6 class="text-primary mb-3"><i class="ri-calendar-line"></i> Check-out</h6>
-                                            <p class="badge bg-danger fs-6">${guest.checkOut}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mb-4">
-                                    <div class="col-12">
-                                        <div class="detail-group">
-                                            <h6 class="text-primary mb-3"><i class="ri-flag-line"></i> Nacionalidad</h6>
-                                            <p>${guest.nationality}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mb-4">
-                                    <div class="col-12">
-                                        <div class="detail-group">
-                                            <h6 class="text-primary mb-3"><i class="ri-file-text-line"></i> Observaciones</h6>
-                                            <p class="bg-light p-3 rounded">${guest.observation || 'Sin observaciones'}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mb-4">
-                                    <div class="col-12">
-                                        <div class="detail-group">
-                                            <h6 class="text-primary mb-3"><i class="ri-gift-line"></i> Solicitud Especial</h6>
-                                            <p>${guest.specialRequest ? getSpecialRequestText(guest.specialRequest) : 'Sin solicitud especial'}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mt-4">
-                                    <div class="col-6">
-                                        <button class="btn btn-warning w-100" onclick="editGuest('${id}')">
-                                            <i class="ri-edit-line"></i> Editar
-                                        </button>
-                                    </div>
-                                    <div class="col-6">
-                                        <button class="btn btn-danger w-100" onclick="deleteGuest('${id}')">
-                                            <i class="ri-delete-bin-line"></i> Eliminar
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
-                        modal.show();
-                    }
-                });
-            });
-        };
+function updateGoalProgress(currency) {
+    const goal = goals[currency] || 0;
+    const currentAmount = parseFloat(document.getElementById(`${currency.toLowerCase()}Current`).textContent);
+    const progress = goal > 0 ? (currentAmount / goal) * 100 : 0;
+    
+    document.getElementById(`${currency.toLowerCase()}Progress`).style.width = `${Math.min(100, progress)}%`;
+    document.getElementById(`${currency.toLowerCase()}Goal`).textContent = goal.toFixed(2);
+}
+</script>
 
-        // Add edit functionality
-        window.editGuest = function(guestId) {
-            const guestRef = ref(database, `guests/${guestId}`);
-            onValue(guestRef, (snapshot) => {
-                const guest = snapshot.val();
-                
-                // Populate the edit form
-                document.getElementById('editGuestForm').reset();
-                document.getElementById('editRoomNumber').value = guest.roomNumber;
-                document.getElementById('editGuestName').value = guest.guestName;
-                document.getElementById('editCheckIn').value = guest.checkIn;
-                document.getElementById('editCheckOut').value = guest.checkOut;
-                document.getElementById('editNationality').value = guest.nationality;
-                document.getElementById('editStatus').value = guest.status;
-                document.getElementById('editSpecialRequest').value = guest.specialRequest || '';
-                document.getElementById('editObservation').value = guest.observation || '';
-                
-                // Store the guest ID for the save function
-                document.getElementById('editGuestForm').dataset.guestId = guestId;
-                
-                // Properly handle modal transitions
-                const detailsModal = bootstrap.Modal.getInstance(document.getElementById('detailsModal'));
-                if (detailsModal) {
-                    detailsModal.hide();
-                }
-                
-                // Small timeout to ensure smooth transition between modals
-                setTimeout(() => {
-                    const editModal = new bootstrap.Modal(document.getElementById('editGuestModal'));
-                    editModal.show();
-                }, 150);
-                
-            }, {
-                onlyOnce: true
-            });
-        };
-
-        // Add delete functionality
-        window.deleteGuest = function(guestId) {
-            if (confirm('¿Estás seguro de que deseas eliminar este huésped?')) {
-                const guestRef = ref(database, `guests/${guestId}`);
-                set(guestRef, null)
-                    .then(() => {
-                        bootstrap.Modal.getInstance(document.getElementById('detailsModal')).hide();
-                        alert('Huésped eliminado exitosamente');
-                    })
-                    .catch((error) => {
-                        console.error('Error deleting guest:', error);
-                        alert('Error al eliminar huésped');
-                    });
-            }
-        };
-
-        // Add save edit functionality
-        window.saveEdit = function() {
-            const guestId = document.getElementById('editGuestForm').dataset.guestId;
-            const editedGuest = {
-                roomNumber: document.getElementById('editRoomNumber').value,
-                guestName: document.getElementById('editGuestName').value,
-                checkIn: document.getElementById('editCheckIn').value,
-                checkOut: document.getElementById('editCheckOut').value,
-                nationality: document.getElementById('editNationality').value,
-                status: document.getElementById('editStatus').value,
-                observation: document.getElementById('editObservation').value,
-                specialRequest: document.getElementById('editSpecialRequest').value,
-            };
-
-            const guestRef = ref(database, `guests/${guestId}`);
-            set(guestRef, editedGuest)
-                .then(() => {
-                    // Properly close both modals
-                    const editModal = bootstrap.Modal.getInstance(document.getElementById('editGuestModal'));
-                    const detailsModal = bootstrap.Modal.getInstance(document.getElementById('detailsModal'));
-                    
-                    if (editModal) {
-                        editModal.hide();
-                    }
-                    
-                    if (detailsModal) {
-                        detailsModal.hide();
-                    }
-                    
-                    // Clear any modal backdrops
-                    const modalBackdrops = document.querySelectorAll('.modal-backdrop');
-                    modalBackdrops.forEach(backdrop => backdrop.remove());
-                    
-                    // Remove modal-open class from body
-                    document.body.classList.remove('modal-open');
-                    document.body.style.overflow = '';
-                    document.body.style.paddingRight = '';
-                    
-                    // Refresh the rooms display
-                    loadRooms();
-                    
-                    alert('Huésped actualizado exitosamente');
-                })
-                .catch((error) => {
-                    console.error('Error updating guest:', error);
-                    alert('Error al actualizar huésped');
-                });
-        };
-
-        window.saveFollowUp = function() {
-            const guestId = document.getElementById('followUpForm').dataset.guestId;
-            const followUp = {
-                room: document.getElementById('followUpRoom').value,
-                date: document.getElementById('followUpDate').value,
-                mood: document.getElementById('followUpMood').value,
-                category: document.getElementById('followUpCategory').value,
-                notes: document.getElementById('followUpNotes').value,
-                requiresAction: document.getElementById('followUpAction').value,
-                priority: document.getElementById('followUpPriority').value,
-                status: 'pending',
-                createdAt: new Date().toISOString()
-            };
-
-            if (!followUp.date || !followUp.mood || !followUp.category || !followUp.notes) {
-                alert('Por favor complete todos los campos requeridos');
-                return;
-            }
-
-            const followUpsRef = ref(database, `followups/${guestId}`);
-            push(followUpsRef, followUp)
-                .then(() => {
-                    incrementVisit();  // Increment visit counter when follow-up is saved
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('followUpModal'));
-                    modal.hide();
-                    document.getElementById('followUpForm').reset();
-                    alert('Seguimiento guardado exitosamente');
-                })
-                .catch((error) => {
-                    console.error('Error saving follow-up:', error);
-                    alert('Error al guardar el seguimiento');
-                });
-        };
-
-        // Update the addFollowUp function to populate the room number:
-        window.addFollowUp = function(guestId) {
-            const guestRef = ref(database, `guests/${guestId}`);
-            onValue(guestRef, (snapshot) => {
-                const guest = snapshot.val();
-                document.getElementById('followUpRoom').value = guest.roomNumber;
-                document.getElementById('followUpForm').dataset.guestId = guestId;
-                
-                const modal = new bootstrap.Modal(document.getElementById('followUpModal'));
-                modal.show();
-            }, {
-                onlyOnce: true
-            });
-        };
-
-        function getSpecialRequestText(request) {
-            const texts = {
-                'birthday': '🎂 Cumpleaños',
-                'honeymoon': '💑 Luna de Miel',
-                'anniversary': '💝 Aniversario',
-                'vacation': '🌴 Vacaciones'
-            };
-            return texts[request] || request;
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
