@@ -18,10 +18,18 @@
 
 .dashboard-card {
     transition: transform 0.3s, box-shadow 0.3s;
-    cursor: pointer;
     border: none;
     border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card.clickable {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.dashboard-card.clickable:hover {
+  transform: translateY(-5px);
 }
 
 .dashboard-card:hover {
@@ -145,7 +153,7 @@
 
                     <div class="row">
                         <div class="col-md-4 mb-4">
-                            <div class="card dashboard-card bg-primary text-white">
+                            <div class="card dashboard-card bg-primary text-white clickable">
                                 <div class="card-body">
                                     <h5 class="card-title">Total del Mes</h5>
                                     <h2 class="card-text" id="monthlyTotal">&#x24;0.00</h2>
@@ -153,7 +161,7 @@
                             </div>
                         </div>
                         <div class="col-md-4 mb-4">
-                            <div class="card dashboard-card bg-success text-white">
+                            <div class="card dashboard-card bg-success text-white clickable">
                                 <div class="card-body">
                                     <h5 class="card-title">Ismael debe a Nathanael</h5>
                                     <h2 class="card-text" id="ismaelDebt">&#x24;0.00</h2>
@@ -161,7 +169,7 @@
                             </div>
                         </div>
                         <div class="col-md-4 mb-4">
-                            <div class="card dashboard-card bg-info text-white">
+                            <div class="card dashboard-card bg-info text-white clickable">
                                 <div class="card-body">
                                     <h5 class="card-title">Nathanael debe a Ismael</h5>
                                     <h2 class="card-text" id="nathanaelDebt">&#x24;0.00</h2>
@@ -621,6 +629,24 @@ function updateDashboard() {
   updateTotalsDisplay('monthlyTotal', monthlyTotals);
   updateTotalsDisplay('ismaelDebt', ismaelDebts);
   updateTotalsDisplay('nathanaelDebt', nathanaelDebts);
+  document.querySelectorAll('.dashboard-card').forEach(card => {
+    if (card.querySelector('.card-text')) {
+      card.onclick = () => {
+        const cardId = card.querySelector('.card-text').id;
+        let details;
+        if (cardId === 'monthlyTotal') {
+          details = generateMonthlyTotalDetails(monthlyTotals);
+        } else if (cardId === 'ismaelDebt') {
+          details = generateDebtDetails('Ismael', ismaelDebts);
+        } else if (cardId === 'nathanaelDebt') {
+          details = generateDebtDetails('Nathanael', nathanaelDebts);
+        }
+        if (details) {
+          showDashboardCardDetails(details);
+        }
+      };
+    }
+  });
   updateRecentTransactions();
   updateYearlyChart();
 }
@@ -1049,6 +1075,105 @@ function updateGoalProgress(currency) {
   document.getElementById(`${currency.toLowerCase()}Progress`).style.width = `${Math.min(100, progress)}%`;
   document.getElementById(`${currency.toLowerCase()}Goal`).textContent = goal.toFixed(2);
 }
+function generateMonthlyTotalDetails(monthlyTotals) {
+  const currencies = Object.entries(monthlyTotals).filter(([_, amount]) => amount > 0);
+  const totalSum = currencies.reduce((sum, [_, amount]) => sum + amount, 0);
+  return {
+    title: 'Detalles del Total Mensual',
+    content: `
+      <div class="chart-detail-header mb-4">
+        <div class="row align-items-center">
+          <div class="col">
+            <h4 class="mb-0">Resumen del Mes Actual</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <h6 class="card-subtitle mb-2 text-muted">Total Divisas</h6>
+              <h3 class="card-title mb-0">${currencies.length}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="currency-breakdown">
+        <h5 class="mb-3">Desglose por Divisa</h5>
+        ${currencies.map(([currency, amount]) => `
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="currency-detail">
+              <i class="fas ${getCurrencyIcon(currency)} me-2"></i>
+              <span class="fw-bold">${currency}</span>
+            </span>
+            <span class="badge bg-primary fs-6">
+              ${formatCurrency(amount, currency)}
+            </span>
+          </div>
+        `).join('')}
+      </div>
+    `
+  };
+}
+function getCurrencyIcon(currency) {
+  const icons = {
+    USD: 'fa-dollar-sign',
+    EUR: 'fa-euro-sign',
+    DOP: 'fa-money-bill-wave',
+    MXN: 'fa-peso-sign'
+  };
+  return icons[currency] || 'fa-money-bill';
+}
+function generateDebtDetails(person, debts) {
+  const currencies = Object.entries(debts).filter(([_, amount]) => amount > 0);
+  const totalUSD = currencies.reduce((sum, [curr, amount]) => {
+    return sum + amount;
+  }, 0);
+  const otherPerson = person === 'Ismael' ? 'Nathanael' : 'Ismael';
+  return {
+    title: `Detalles de Deuda - ${person}`,
+    content: `
+      <div class="chart-detail-header mb-4">
+        <div class="row align-items-center">
+          <div class="col">
+            <h4 class="mb-0">${person} debe a ${otherPerson}</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <h6 class="card-subtitle mb-2 text-muted">Divisas Pendientes</h6>
+              <h3 class="card-title mb-0">${currencies.length}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <h6 class="card-subtitle mb-2 text-muted">Total USD</h6>
+              <h3 class="card-title mb-0">$${totalUSD.toFixed(2)}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="debt-breakdown">
+        <h5 class="mb-3">Desglose de Deudas</h5>
+        ${currencies.map(([currency, amount]) => `
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="fw-bold">${currency}</span>
+            <span class="badge bg-warning text-dark fs-6">${formatCurrency(amount, currency)}</span>
+          </div>
+        `).join('')}
+      </div>
+    `
+  };
+}
 function showChartDetail(type, label, value, currency) {
   const modalContent = document.getElementById('chartDetailContent');
   const filteredTransactions = transactions.filter(t => {
@@ -1165,6 +1290,14 @@ function showChartDetail(type, label, value, currency) {
         </div>
     `;
   modalContent.innerHTML = html;
+  const modal = new bootstrap.Modal(document.getElementById('chartDetailModal'));
+  modal.show();
+}
+function showDashboardCardDetails(details) {
+  const modalContent = document.getElementById('chartDetailContent');
+  modalContent.innerHTML = details.content;
+  const modalTitle = document.querySelector('#chartDetailModal .modal-title');
+  modalTitle.innerHTML = `<i class="fas fa-chart-bar me-2"></i>${details.title}`;
   const modal = new bootstrap.Modal(document.getElementById('chartDetailModal'));
   modal.show();
 }</script>
