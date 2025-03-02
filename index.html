@@ -168,7 +168,7 @@
                         <div class="col-md-4 mb-4">
                             <div class="card dashboard-card bg-success text-white clickable">
                                 <div class="card-body">
-                                    <h5 class="card-title">Ismael debe a Nathanael</h5>
+                                    <h5 class="card-title">Ismael debe a Pedro</h5>
                                     <h2 class="card-text" id="ismaelDebt">&#x24;0.00</h2>
                                 </div>
                             </div>
@@ -176,8 +176,8 @@
                         <div class="col-md-4 mb-4">
                             <div class="card dashboard-card bg-info text-white clickable">
                                 <div class="card-body">
-                                    <h5 class="card-title">Nathanael debe a Ismael</h5>
-                                    <h2 class="card-text" id="nathanaelDebt">&#x24;0.00</h2>
+                                    <h5 class="card-title">Pedro debe a Ismael</h5>
+                                    <h2 class="card-text" id="pedroDebt">&#x24;0.00</h2>
                                 </div>
                             </div>
                         </div>
@@ -315,7 +315,7 @@
                             <select class="form-select" id="filterReceiver">
                                 <option value>Todos los Receptores</option>
                                 <option value="Ismael">Ismael</option>
-                                <option value="Nathanael">Nathanael</option>
+                                <option value="Nathanael">Pedro</option>
                             </select>
                         </div>
                         <div class="col-md-3">
@@ -494,7 +494,7 @@
                         <label class="form-label">Receptor</label>
                         <select class="form-select" name="receiver" required>
                             <option value="Ismael">Ismael</option>
-                            <option value="Nathanael">Nathanael</option>
+                            <option value="Pedro">Pedro</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -637,7 +637,7 @@ function updateDashboard() {
     EUR: 0,
     MXN: 0
   };
-  const nathanaelDebts = {
+  const pedroDebts = {
     USD: 0,
     DOP: 0,
     EUR: 0,
@@ -655,13 +655,13 @@ function updateDashboard() {
       if (transaction.receiver === 'Ismael') {
         ismaelDebts[currency] += splitAmount;
       } else {
-        nathanaelDebts[currency] += splitAmount;
+        pedroDebts[currency] += splitAmount;
       }
     }
   });
   updateTotalsDisplay('monthlyTotal', monthlyTotals);
   updateTotalsDisplay('ismaelDebt', ismaelDebts);
-  updateTotalsDisplay('nathanaelDebt', nathanaelDebts);
+  updateTotalsDisplay('pedroDebt', pedroDebts);
   document.querySelectorAll('.dashboard-card').forEach(card => {
     if (card.querySelector('.card-text')) {
       card.onclick = () => {
@@ -671,8 +671,8 @@ function updateDashboard() {
           details = generateMonthlyTotalDetails(monthlyTotals);
         } else if (cardId === 'ismaelDebt') {
           details = generateDebtDetails('Ismael', ismaelDebts);
-        } else if (cardId === 'nathanaelDebt') {
-          details = generateDebtDetails('Nathanael', nathanaelDebts);
+        } else if (cardId === 'pedroDebt') {
+          details = generateDebtDetails('Pedro', pedroDebts);
         }
         if (details) {
           showDashboardCardDetails(details);
